@@ -34,16 +34,30 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 });
 
 Route::group(['middleware' => ['auth:sanctum']], function (){
-   Route::apiResource('guilds', GuildController::class);
-   Route::apiResource('channels', ChannelController::class);
-   Route::apiResource('directories', DirectoryController::class);
-   Route::apiResource('events', EventController::class);
-   Route::apiResource('event/{externalId}/attendance', EventAttendanceController::class);
+   Route::apiResource('guilds', GuildController::class)->parameters([
+       'guilds' => 'guild:external_id',
+   ]);
+   Route::apiResource('channels', ChannelController::class)->parameters([
+       'channels' => 'channel:external_id',
+   ]);
+   Route::apiResource('directories', DirectoryController::class)->parameters([
+       'directories' => 'directory:external_id',
+   ]);
+   Route::apiResource('events', EventController::class)->parameters([
+       'events' => 'event:external_id',
+   ]);
+   Route::apiResource('event/{externalId}/attendance', EventAttendanceController::class)->parameters([
+       'eventAttendance' => 'eventAttendance:external_id',
+   ]);
    Route::apiResource('members', MemberController::class)->parameters([
        'members' => 'member:external_id',
    ]);
-   Route::apiResource('reminders', ReminderController::class);
-   Route::apiResource('threads', ThreadController::class);
+   Route::apiResource('reminders', ReminderController::class)->parameters([
+       'reminders' => 'reminder:external_id',
+   ]);
+   Route::apiResource('threads', ThreadController::class)->parameters([
+       'threads' => 'thread:external_id',
+   ]);
 
 
    Route::get('leaderboard/comments', [LeaderboardController::class, 'comments']);
