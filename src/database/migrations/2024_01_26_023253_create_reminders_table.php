@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Channel;
+use App\Models\Guild;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,14 +13,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('reminders', function (Blueprint $table) {
             $table->id();
             $table->uuid('external_id');
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
+            $table->longText('description');
+            $table->string('mention_role')->nullable();
+            $table->dateTime('scheduled_at');
+            $table->string('repeats')->nullable();
+            $table->foreignIdFor(Channel::class);
+            $table->foreignIdFor(Guild::class);
             $table->timestamps();
         });
     }
@@ -28,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('reminders');
     }
 };
