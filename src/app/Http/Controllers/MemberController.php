@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Guild;
 use App\Models\Member;
 use Illuminate\Http\Request;
 
@@ -10,17 +11,23 @@ class MemberController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        $fields = $request->validate([
+            'username' => 'string',
+            'discord_id' => 'string',
+        ]);
+        $members = Member::query();
+        if(isset($fields['username'])){
+            $members->whereUsername($fields['username']);
+        }
+        if(isset($fields['discord_id'])){
+            $members->whereDiscordId($fields['discord_id']);
+        }
+        return [
+            'status' => true,
+            'data' => $members->get(),
+        ];
     }
 
     /**
@@ -28,7 +35,28 @@ class MemberController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $fields = $request->validate([
+            'discord_id' => ['required','unique:App\Models\Member,discord_id'],
+            'guild' => ['uuid', 'required','exists:App\Models\Guild,external_id'],
+            'total_comments' => ['integer','min:0'],
+            'username' => ['string', 'required'],
+            'verified_by_member' => ['uuid','exists:App\Models\Member,external_id'],
+        ]);
+
+        $member = new Member();
+        $member->fill($fields);
+        $member->guild()
+            ->associate(Guild::whereExternalId($fields['guild'])->first());
+        if(isset($fields['verified_by_member'])){
+            $member->verifiedBy()
+                ->associate(Member::whereExternalId($fields['verified_by_member'])->first());
+        }
+        $member->save();
+
+        return [
+            'status' => true,
+            'data' => $member,
+        ];
     }
 
     /**
@@ -40,19 +68,29 @@ class MemberController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Member $member)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, Member $member)
     {
-        //
+        $fields = $request->validate([
+            'total_comments' => ['integer','min:0'],
+            'username' => ['string',],
+            'verified_by_member' => ['uuid','exists:App\Models\Member,external_id'],
+            'increment_comments' => ['bool','prohibited_unless:total_comments,null'],
+        ]);
+        $member->fill($fields);
+        if(isset($fields['verified_by_member'])){
+            $member->verifiedBy()->associate(Member::whereExternalId($fields['verified_by_member'])->first());
+        }
+        if(isset($fields['increment_comments'])){
+            ++$member->total_comments;
+        }
+        $member->save();
+
+        return [
+            'status' => true,
+            'data' => $member,
+        ];
     }
 
     /**
@@ -60,6 +98,10 @@ class MemberController extends Controller
      */
     public function destroy(Member $member)
     {
-        //
+        $member->delete();
+
+        return [
+            'status' => true,
+        ];
     }
 }

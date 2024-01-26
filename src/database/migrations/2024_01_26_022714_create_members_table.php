@@ -20,7 +20,7 @@ return new class extends Migration
             $table->foreignIdFor(Guild::class);
             $table->integer('total_comments')->default(0);
             $table->string('username');
-            $table->foreignIdFor(Member::class, 'verified_by');
+            $table->foreignIdFor(Member::class, 'verified_by')->nullable();
             $table->timestamps();
         });
     }

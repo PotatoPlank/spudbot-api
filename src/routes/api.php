@@ -39,7 +39,9 @@ Route::group(['middleware' => ['auth:sanctum']], function (){
    Route::apiResource('directories', DirectoryController::class);
    Route::apiResource('events', EventController::class);
    Route::apiResource('event/{externalId}/attendance', EventAttendanceController::class);
-   Route::apiResource('members', MemberController::class);
+   Route::apiResource('members', MemberController::class)->parameters([
+       'members' => 'member:external_id',
+   ]);
    Route::apiResource('reminders', ReminderController::class);
    Route::apiResource('threads', ThreadController::class);
 
