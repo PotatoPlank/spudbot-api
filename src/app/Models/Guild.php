@@ -16,6 +16,12 @@ class Guild extends Model
         'id',
     ];
 
+    protected $fillable = [
+        'discord_id',
+        'channel_announce_id',
+        'channel_thread_announce_id',
+    ];
+
     public function members(): HasMany
     {
         return $this->hasMany(Member::class);

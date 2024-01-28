@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Channel;
 use App\Models\Guild;
 use Illuminate\Http\Request;
 
@@ -10,17 +11,19 @@ class GuildController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return Guild::all();
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        $fields = $request->validate([
+            'discord_id' => 'string',
+        ]);
+        $guilds = Guild::query();
+        if(isset($fields['discord_id'])){
+            $guilds->whereDiscordId($fields['dicord_id']);
+        }
+        return [
+            'status' => true,
+            'data' => $guilds,
+        ];
     }
 
     /**
@@ -28,7 +31,20 @@ class GuildController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $fields = $request->validate([
+            'discord_id' => ['required','unique:App\Models\Guild,discord_id'],
+            'channel_announce_id' => [],
+            'channel_thread_announce_id' => [],
+        ]);
+        $guild = new Guild();
+        $guild->fill($fields);
+
+        $guild->save();
+
+        return [
+            'status' => true,
+            'data' => $guild,
+        ];
     }
 
     /**
@@ -36,15 +52,7 @@ class GuildController extends Controller
      */
     public function show(Guild $guild)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Guild $guild)
-    {
-        //
+        return $guild;
     }
 
     /**
@@ -52,7 +60,22 @@ class GuildController extends Controller
      */
     public function update(Request $request, Guild $guild)
     {
-        //
+        $fields = $request->validate([
+            'channel_announce_id' => [],
+            'channel_thread_announce_id' => [],
+        ]);
+        if(isset($fields['channel_announce_id'])){
+            $guild->channel_announce_id = $fields['channel_announce_id'];
+        }
+        if(isset($fields['channel_thread_announce_id'])){
+            $guild->channel_thread_announce_id = $fields['channel_thread_announce_id'];
+        }
+        $guild->save();
+
+        return [
+            'success' => true,
+            'data' => $guild,
+        ];
     }
 
     /**
@@ -60,6 +83,11 @@ class GuildController extends Controller
      */
     public function destroy(Guild $guild)
     {
-        //
+        //$guild->delete();
+
+        return [
+            'status' => false,
+            'message' => 'Not currently possible to delete guilds',
+        ];
     }
 }
