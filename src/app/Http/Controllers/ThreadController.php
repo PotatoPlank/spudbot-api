@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Channel;
+use App\Models\Guild;
 use App\Models\Thread;
 use Illuminate\Http\Request;
 
@@ -10,17 +12,20 @@ class ThreadController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-    }
+        $fields = $request->validate([
+            'discord_id' => 'string',
+        ]);
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        $threads = Thread::query();
+        if (isset($fields['discord_id'])) {
+            $threads->whereDiscordId($fields['discord_id']);
+        }
+        return [
+            'status' => true,
+            'data' => $threads->get(),
+        ];
     }
 
     /**
@@ -28,7 +33,24 @@ class ThreadController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $fields = $request->validate([
+            'discord_id' => ['required', 'unique:App\Models\Member,discord_id'],
+            'guild' => ['required', 'uuid', 'exists:App\Models\Guild,external_id'],
+            'channel' => ['required', 'uuid', 'exists:App\Models\Channel,external_id'],
+            'tag' => ['string', 'nullable'],
+        ]);
+
+        $thread = new Thread();
+        $thread->discord_id = $fields['discord_id'];
+        $thread->guild()->associate(Guild::whereExternalId($fields['guild'])->first());
+        $thread->channel()->associate(Channel::whereExternalId($fields['channel'])->first());
+        $thread->tag = $fields['tag'] ?? '';
+        $thread->save();
+
+        return [
+            'status' => true,
+            'data' => $thread,
+        ];
     }
 
     /**
@@ -36,15 +58,7 @@ class ThreadController extends Controller
      */
     public function show(Thread $thread)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Thread $thread)
-    {
-        //
+        return $thread;
     }
 
     /**
@@ -52,7 +66,17 @@ class ThreadController extends Controller
      */
     public function update(Request $request, Thread $thread)
     {
-        //
+        $fields = $request->validate([
+            'tag' => ['required', 'string', 'nullable'],
+        ]);
+
+        $thread->tag = $fields['tag'] ?? '';
+        $thread->save();
+        
+        return [
+            'status' => true,
+            'data' => $thread,
+        ];
     }
 
     /**
@@ -60,6 +84,10 @@ class ThreadController extends Controller
      */
     public function destroy(Thread $thread)
     {
-        //
+        $thread->delete();
+
+        return [
+            'status' => true,
+        ];
     }
 }

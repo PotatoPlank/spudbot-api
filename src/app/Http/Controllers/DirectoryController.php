@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Channel;
 use App\Models\Directory;
 use Illuminate\Http\Request;
 
@@ -10,17 +11,20 @@ class DirectoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-    }
+        $fields = $request->validate([
+            'embed_id' => 'string',
+        ]);
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        $directory = Directory::query();
+        if (isset($fields['embed_id'])) {
+            $directory->whereEmbedId($fields['embed_id']);
+        }
+        return [
+            'status' => true,
+            'data' => $directory->get(),
+        ];
     }
 
     /**
@@ -28,7 +32,22 @@ class DirectoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $fields = $request->validate([
+            'embed_id' => 'string',
+            'directory_channel' => ['required', 'uuid', 'exists:App\Models\Channel,external_id'],
+            'forum_channel' => ['required', 'uuid', 'exists:App\Models\Channel,external_id'],
+        ]);
+
+        $directory = new Directory();
+        $directory->directoryChannel()->associate(Channel::whereExternalId($fields['directory_channel'])->first());
+        $directory->forumChannel()->associate(Channel::whereExternalId($fields['forum_channel'])->first());
+        $directory->embed_id = $fields['embed_id'];
+        $directory->save();
+
+        return [
+            'status' => true,
+            'data' => $directory,
+        ];
     }
 
     /**
@@ -36,15 +55,7 @@ class DirectoryController extends Controller
      */
     public function show(Directory $directory)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Directory $directory)
-    {
-        //
+        return $directory;
     }
 
     /**
@@ -52,7 +63,10 @@ class DirectoryController extends Controller
      */
     public function update(Request $request, Directory $directory)
     {
-        //
+        return response([
+            'status' => false,
+            'message' => 'Directories cannot be updated.',
+        ], 302);
     }
 
     /**
@@ -60,6 +74,10 @@ class DirectoryController extends Controller
      */
     public function destroy(Directory $directory)
     {
-        //
+        $directory->delete();
+
+        return [
+            'status' => true,
+        ];
     }
 }

@@ -18,10 +18,10 @@ class MemberController extends Controller
             'discord_id' => 'string',
         ]);
         $members = Member::query();
-        if(isset($fields['username'])){
+        if (isset($fields['username'])) {
             $members->whereUsername($fields['username']);
         }
-        if(isset($fields['discord_id'])){
+        if (isset($fields['discord_id'])) {
             $members->whereDiscordId($fields['discord_id']);
         }
         return [
@@ -36,18 +36,22 @@ class MemberController extends Controller
     public function store(Request $request)
     {
         $fields = $request->validate([
-            'discord_id' => ['required','unique:App\Models\Member,discord_id'],
-            'guild' => ['uuid', 'required','exists:App\Models\Guild,external_id'],
-            'total_comments' => ['integer','min:0'],
+            'discord_id' => ['required', 'unique:App\Models\Member,discord_id'],
+            'guild' => ['uuid', 'required', 'exists:App\Models\Guild,external_id'],
+            'total_comments' => ['numeric', 'nullable', 'min:0'],
             'username' => ['string', 'required'],
-            'verified_by_member' => ['uuid','exists:App\Models\Member,external_id'],
+            'verified_by_member' => ['uuid', 'nullable', 'exists:App\Models\Member,external_id'],
         ]);
+
+        if (!$fields['total_comments']) {
+            $fields['total_comments'] = 0;
+        }
 
         $member = new Member();
         $member->fill($fields);
         $member->guild()
             ->associate(Guild::whereExternalId($fields['guild'])->first());
-        if(isset($fields['verified_by_member'])){
+        if (isset($fields['verified_by_member'])) {
             $member->verifiedBy()
                 ->associate(Member::whereExternalId($fields['verified_by_member'])->first());
         }
@@ -73,16 +77,37 @@ class MemberController extends Controller
     public function update(Request $request, Member $member)
     {
         $fields = $request->validate([
-            'total_comments' => ['integer','min:0'],
+            'total_comments' => ['integer', 'min:0'],
             'username' => ['string',],
-            'verified_by_member' => ['uuid','exists:App\Models\Member,external_id'],
-            'increment_comments' => ['bool','prohibited_unless:total_comments,null'],
+            'verified_by_member' => ['uuid', 'exists:App\Models\Member,external_id'],
+            'increment_comments' => ['bool', 'prohibited_unless:total_comments,null'],
         ]);
         $member->fill($fields);
-        if(isset($fields['verified_by_member'])){
+        if (isset($fields['verified_by_member'])) {
+            if ($member->verifiedBy()->exists()) {
+                return response([
+                    'success' => false,
+                    'message' => 'This member is already verified.'
+                ], 302);
+            }
+            if ($member->external_id === $fields['verified_by_member']) {
+                return response([
+                    'success' => false,
+                    'message' => 'A member cannot verify themselves.'
+                ], 302);
+            }
+            $verifyingMember = Member::whereExternalId($fields['verified_by_member'])->first();
+            if (!$verifyingMember->verifiedBy()->exists()) {
+                return response([
+                    'success' => false,
+                    'message' => 'An unverified member cannot verify another member.'
+                ], 302);
+            }
+
+
             $member->verifiedBy()->associate(Member::whereExternalId($fields['verified_by_member'])->first());
         }
-        if(isset($fields['increment_comments'])){
+        if (isset($fields['increment_comments'])) {
             ++$member->total_comments;
         }
         $member->save();

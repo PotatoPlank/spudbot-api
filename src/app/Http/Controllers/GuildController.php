@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Channel;
 use App\Models\Guild;
 use Illuminate\Http\Request;
 
@@ -17,12 +16,12 @@ class GuildController extends Controller
             'discord_id' => 'string',
         ]);
         $guilds = Guild::query();
-        if(isset($fields['discord_id'])){
-            $guilds->whereDiscordId($fields['dicord_id']);
+        if (isset($fields['discord_id'])) {
+            $guilds->whereDiscordId($fields['discord_id']);
         }
         return [
             'status' => true,
-            'data' => $guilds,
+            'data' => $guilds->get(),
         ];
     }
 
@@ -32,7 +31,7 @@ class GuildController extends Controller
     public function store(Request $request)
     {
         $fields = $request->validate([
-            'discord_id' => ['required','unique:App\Models\Guild,discord_id'],
+            'discord_id' => ['required', 'unique:App\Models\Guild,discord_id'],
             'channel_announce_id' => [],
             'channel_thread_announce_id' => [],
         ]);
@@ -64,10 +63,10 @@ class GuildController extends Controller
             'channel_announce_id' => [],
             'channel_thread_announce_id' => [],
         ]);
-        if(isset($fields['channel_announce_id'])){
+        if (isset($fields['channel_announce_id'])) {
             $guild->channel_announce_id = $fields['channel_announce_id'];
         }
-        if(isset($fields['channel_thread_announce_id'])){
+        if (isset($fields['channel_thread_announce_id'])) {
             $guild->channel_thread_announce_id = $fields['channel_thread_announce_id'];
         }
         $guild->save();

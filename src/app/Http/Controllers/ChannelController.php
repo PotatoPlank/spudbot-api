@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Channel;
+use App\Models\Guild;
 use Illuminate\Http\Request;
 
 class ChannelController extends Controller
@@ -10,17 +11,20 @@ class ChannelController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-    }
+        $fields = $request->validate([
+            'discord_id' => 'string',
+        ]);
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        $channels = Channel::query();
+        if (isset($fields['discord_id'])) {
+            $channels->whereDiscordId($fields['discord_id']);
+        }
+        return [
+            'status' => true,
+            'data' => $channels->get(),
+        ];
     }
 
     /**
@@ -28,7 +32,21 @@ class ChannelController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $fields = $request->validate([
+            'discord_id' => ['required', 'unique:App\Models\Member,discord_id'],
+            'guild' => ['uuid', 'required', 'exists:App\Models\Guild,external_id'],
+        ]);
+
+        $channel = new Channel();
+        $channel->discord_id = $fields['discord_id'];
+        $channel->guild()->associate(Guild::whereExternalId($fields['guild'])->first());
+        $channel->save();
+
+
+        return [
+            'status' => true,
+            'data' => $channel,
+        ];
     }
 
     /**
@@ -36,15 +54,7 @@ class ChannelController extends Controller
      */
     public function show(Channel $channel)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Channel $channel)
-    {
-        //
+        return $channel;
     }
 
     /**
@@ -52,7 +62,26 @@ class ChannelController extends Controller
      */
     public function update(Request $request, Channel $channel)
     {
-        //
+        $fields = $request->validate([
+            'discord_id' => ['unique:App\Models\Member,discord_id'],
+            'guild' => ['uuid', 'exists:App\Models\Guild,external_id'],
+        ]);
+
+        if (isset($fields['discord_id'])) {
+            $channel->discord_id = $fields['discord_id'];
+        }
+        if (isset($fields['guild'])) {
+            $channel->guild()->associate(Guild::whereExternalId($fields['guild'])->first());
+        }
+
+
+        $channel->save();
+
+
+        return [
+            'status' => true,
+            'data' => $channel,
+        ];
     }
 
     /**
@@ -60,6 +89,10 @@ class ChannelController extends Controller
      */
     public function destroy(Channel $channel)
     {
-        //
+        $channel->delete();
+
+        return [
+            'status' => true,
+        ];
     }
 }
