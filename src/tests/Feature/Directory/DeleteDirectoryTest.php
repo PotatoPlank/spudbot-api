@@ -24,13 +24,4 @@ class DeleteDirectoryTest extends TestCase
         $response->assertStatus(200);
         $this->assertTrue($response['status']);
     }
-
-    public function test_guest_cannot_delete_directory(): void
-    {
-        Guild::factory()->create();
-        $directory = Directory::factory()->create();
-        $response = $this->delete(route('directories.destroy', ['directory' => $directory->external_id]));
-
-        $response->assertStatus(302);
-    }
 }

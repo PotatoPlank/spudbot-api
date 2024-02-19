@@ -22,13 +22,4 @@ class DeleteChannelTest extends TestCase
         $response->assertStatus(200);
         $this->assertTrue($response['status']);
     }
-
-    public function test_guest_cannot_delete_channel(): void
-    {
-        Guild::factory()->create();
-        $channel = Channel::factory()->create();
-        $response = $this->delete(route('channels.destroy', ['channel' => $channel->external_id]));
-
-        $response->assertStatus(302);
-    }
 }

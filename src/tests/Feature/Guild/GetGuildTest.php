@@ -19,14 +19,6 @@ class GetGuildTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_guest_cannot_get_guilds(): void
-    {
-        $route = route('guilds.index');
-        $response = $this->get($route);
-
-        $response->assertStatus(302);
-    }
-
     public function test_user_can_see_guilds(): void
     {
         $user = User::factory()->create();

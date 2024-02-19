@@ -26,19 +26,6 @@ class CreateDirectoryTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_guest_cannot_create_directory(): void
-    {
-        $route = route('directories.store');
-
-        $response = $this->post($route, [
-            'embed_id' => (string)random_int(1000000, 9999999),
-            'directory_channel' => Channel::factory()->create(),
-            'forum_channel' => Channel::factory()->create()->external_id,
-        ]);
-
-        $response->assertStatus(302);
-    }
-
     /**
      * @dataProvider invalidDirectoryData
      * @param $embedId

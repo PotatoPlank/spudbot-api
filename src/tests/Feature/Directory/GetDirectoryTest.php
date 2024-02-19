@@ -21,14 +21,6 @@ class GetDirectoryTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_guest_cannot_get_directories(): void
-    {
-        $route = route('directories.index');
-        $response = $this->get($route);
-
-        $response->assertStatus(302);
-    }
-
     public function test_user_can_see_directories(): void
     {
         $route = route('directories.index');

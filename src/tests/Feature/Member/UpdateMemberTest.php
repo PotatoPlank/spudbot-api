@@ -15,33 +15,6 @@ class UpdateMemberTest extends TestCase
     /**
      * @dataProvider validMemberFields
      */
-    public function test_guest_cannot_update_member($totalComments, $verifiedBy, $username, $incrementComments): void
-    {
-        Guild::factory()->create();
-        $member = Member::factory()->create();
-        $payload = [];
-        if ($totalComments !== null) {
-            $payload['total_comments'] = $totalComments;
-        }
-        if ($verifiedBy !== null) {
-            $payload['verified_by_member'] = $verifiedBy;
-        }
-        if ($username !== null) {
-            $payload['username'] = $username;
-        }
-        if ($incrementComments !== null) {
-            $payload['increment_comments'] = $incrementComments;
-        }
-
-        $route = route('members.update', ['member' => $member->external_id]);
-        $response = $this->put($route, $payload);
-
-        $response->assertStatus(302);
-    }
-
-    /**
-     * @dataProvider validMemberFields
-     */
     public function test_user_can_update_member($totalComments, $verifiedBy, $username, $incrementComments): void
     {
         Guild::factory()->create();

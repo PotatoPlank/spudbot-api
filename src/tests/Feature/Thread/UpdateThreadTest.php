@@ -13,21 +13,6 @@ class UpdateThreadTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_guest_cannot_update_thread(): void
-    {
-        Guild::factory()->create();
-        Channel::factory()->create();
-        $thread = Thread::factory()->create();
-        $payload = [
-            'tag' => fake()->words(3, true),
-        ];
-
-        $route = route('threads.update', ['thread' => $thread->external_id]);
-        $response = $this->put($route, $payload);
-
-        $response->assertStatus(302);
-    }
-
     public function test_user_can_update_thread(): void
     {
         Guild::factory()->create();

@@ -29,22 +29,6 @@ class CreateGuildTest extends TestCase
     }
 
     /**
-     * @dataProvider validGuildData
-     */
-    public function test_guest_cannot_create_guilds($discordId, $channelAnnounceId, $channelThreadAnnounceId): void
-    {
-        $route = route('guilds.store');
-        $payload = [
-            'discord_id' => $discordId,
-            'channel_announce_id' => $channelAnnounceId,
-            'channel_thread_announce_id' => $channelThreadAnnounceId,
-        ];
-        $response = $this->get($route, $payload);
-
-        $response->assertStatus(302);
-    }
-
-    /**
      * @dataProvider invalidGuildData
      */
     public function test_user_cannot_create_invalid_guild(

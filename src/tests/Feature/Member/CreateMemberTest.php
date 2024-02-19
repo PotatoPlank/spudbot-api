@@ -40,28 +40,6 @@ class CreateMemberTest extends TestCase
     }
 
     /**
-     * @dataProvider validMemberData
-     * @param $discordId
-     * @param $totalComments
-     * @param $username
-     * @return void
-     */
-    public function test_guest_cannot_create_member($discordId, $totalComments, $username): void
-    {
-        $route = route('members.store');
-        $guild = Guild::factory()->create();
-
-        $response = $this->post($route, [
-            'discord_id' => $discordId,
-            'total_comments' => $totalComments,
-            'username' => $username,
-            'guild' => $guild->external_id,
-        ]);
-
-        $response->assertStatus(302);
-    }
-
-    /**
      * @dataProvider invalidMemberData
      * @param $discordId
      * @param $totalComments

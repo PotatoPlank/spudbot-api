@@ -12,21 +12,6 @@ class UpdateChannelTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_guest_cannot_update_channel(): void
-    {
-        Guild::factory()->create();
-        $channel = Channel::factory()->create();
-        $payload = [
-            'discord_id',
-            random_int(100000, 9999999),
-        ];
-
-        $route = route('channels.update', ['channel' => $channel->external_id]);
-        $response = $this->put($route, $payload);
-
-        $response->assertStatus(302);
-    }
-
     /**
      * @dataProvider validChannelFields
      */

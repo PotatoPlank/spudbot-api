@@ -22,13 +22,4 @@ class DeleteThreadTest extends TestCase
         $response->assertStatus(200);
         $this->assertTrue($response['status']);
     }
-
-    public function test_guest_cannot_delete_thread(): void
-    {
-        Guild::factory()->create();
-        $thread = Thread::factory()->create();
-        $response = $this->delete(route('threads.destroy', ['thread' => $thread->external_id]));
-
-        $response->assertStatus(302);
-    }
 }

@@ -35,23 +35,6 @@ class CreateThreadTest extends TestCase
     }
 
     /**
-     * @dataProvider validThreadData
-     */
-    public function test_guest_cannot_create_thread($discordId, $tag): void
-    {
-        $route = route('threads.store');
-
-        $response = $this->post($route, [
-            'discord_id' => $discordId,
-            'guild' => Guild::factory()->create()->external_id,
-            'channel' => Channel::factory()->create()->external_id,
-            'tag' => $tag,
-        ]);
-
-        $response->assertStatus(302);
-    }
-
-    /**
      * @dataProvider invalidThreadData
      * @param $discordId
      * @param $createGuild

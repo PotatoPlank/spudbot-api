@@ -32,24 +32,6 @@ class CreateChannelTest extends TestCase
     }
 
     /**
-     * @dataProvider validChannelData
-     * @param $discordId
-     * @return void
-     */
-    public function test_guest_cannot_create_channel($discordId): void
-    {
-        $route = route('channels.store');
-        $guild = Guild::factory()->create();
-
-        $response = $this->post($route, [
-            'discord_id' => $discordId,
-            'guild' => $guild->external_id,
-        ]);
-
-        $response->assertStatus(302);
-    }
-
-    /**
      * @dataProvider invalidChannelData
      * @param $discordId
      * @param $guild

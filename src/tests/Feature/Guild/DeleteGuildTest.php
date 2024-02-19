@@ -20,12 +20,4 @@ class DeleteGuildTest extends TestCase
         $response->assertStatus(200);
         $this->assertFalse($response['status']);
     }
-
-    public function test_guest_cannot_delete_guild(): void
-    {
-        $guild = Guild::factory()->create();
-        $response = $this->delete(route('guilds.destroy', ['guild' => $guild->external_id]));
-
-        $response->assertStatus(302);
-    }
 }

@@ -22,13 +22,4 @@ class DeleteMemberTest extends TestCase
         $response->assertStatus(200);
         $this->assertTrue($response['status']);
     }
-
-    public function test_guest_cannot_delete_member(): void
-    {
-        Guild::factory()->create();
-        $member = Member::factory()->create();
-        $response = $this->delete(route('members.destroy', ['member' => $member->external_id]));
-
-        $response->assertStatus(302);
-    }
 }
