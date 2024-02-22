@@ -20,7 +20,7 @@ class MemberFactory extends Factory
     {
         return [
             'discord_id' => random_int(10000000, 99999999),
-            'guild_id' => $this->faker->randomElement(Guild::pluck('id')),
+            'guild_id' => Guild::factory(),
             'total_comments' => random_int(0, 1000),
             'username' => $this->faker->userName(),
             'verified_by' => null,

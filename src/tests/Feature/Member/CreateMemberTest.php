@@ -17,6 +17,7 @@ class CreateMemberTest extends TestCase
      * @param $discordId
      * @param $totalComments
      * @param $username
+     * @param $verifiedByMember
      * @return void
      */
     public function test_user_can_create_member($discordId, $totalComments, $username, $verifiedByMember): void

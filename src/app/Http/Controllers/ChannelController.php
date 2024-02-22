@@ -33,7 +33,7 @@ class ChannelController extends Controller
     public function store(Request $request)
     {
         $fields = $request->validate([
-            'discord_id' => ['required', 'unique:App\Models\Member,discord_id'],
+            'discord_id' => ['required', 'unique:App\Models\Channel,discord_id'],
             'guild' => ['uuid', 'required', 'exists:App\Models\Guild,external_id'],
         ]);
 
@@ -63,7 +63,7 @@ class ChannelController extends Controller
     public function update(Request $request, Channel $channel)
     {
         $fields = $request->validate([
-            'discord_id' => ['unique:App\Models\Member,discord_id'],
+            'discord_id' => ['unique:App\Models\Channel,discord_id'],
             'guild' => ['uuid', 'exists:App\Models\Guild,external_id'],
         ]);
 

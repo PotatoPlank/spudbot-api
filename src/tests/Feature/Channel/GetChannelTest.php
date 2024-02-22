@@ -3,7 +3,6 @@
 namespace Tests\Feature\Channel;
 
 use App\Models\Channel;
-use App\Models\Guild;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -25,7 +24,6 @@ class GetChannelTest extends TestCase
     {
         $route = route('channels.index');
         $user = User::factory()->create();
-        Guild::factory()->create();
         Channel::factory()->create();
 
         $response = $this->actingAs($user)->get($route);
@@ -38,7 +36,6 @@ class GetChannelTest extends TestCase
     public function test_user_can_search_channel(): void
     {
         $user = User::factory()->create();
-        Guild::factory()->create();
         $channel = Channel::factory()->create();
 
         $response = $this->actingAs($user)
@@ -51,7 +48,6 @@ class GetChannelTest extends TestCase
     public function test_user_can_get_channel(): void
     {
         $user = User::factory()->create();
-        Guild::factory()->create();
         $channel = Channel::factory()->create();
 
         $response = $this->actingAs($user)

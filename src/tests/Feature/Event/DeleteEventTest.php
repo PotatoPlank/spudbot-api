@@ -1,22 +1,22 @@
 <?php
 
-namespace Tests\Feature\Directory;
+namespace Event;
 
-use App\Models\Directory;
+use App\Models\Event;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class DeleteDirectoryTest extends TestCase
+class DeleteEventTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_user_can_delete_directory(): void
+    public function test_user_can_delete_event(): void
     {
         $user = User::factory()->create();
-        $directory = Directory::factory()->create();
+        $event = Event::factory()->create();
         $response = $this->actingAs($user)->delete(
-            route('directories.destroy', ['directory' => $directory->external_id])
+            route('events.destroy', ['event' => $event->external_id])
         );
 
         $response->assertStatus(200);

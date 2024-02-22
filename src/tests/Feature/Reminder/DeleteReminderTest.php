@@ -1,22 +1,22 @@
 <?php
 
-namespace Tests\Feature\Directory;
+namespace Tests\Feature\Reminder;
 
-use App\Models\Directory;
+use App\Models\Reminder;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class DeleteDirectoryTest extends TestCase
+class DeleteReminderTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_user_can_delete_directory(): void
+    public function test_user_can_delete_reminder(): void
     {
         $user = User::factory()->create();
-        $directory = Directory::factory()->create();
+        $reminder = Reminder::factory()->create();
         $response = $this->actingAs($user)->delete(
-            route('directories.destroy', ['directory' => $directory->external_id])
+            route('reminders.destroy', ['reminder' => $reminder->external_id])
         );
 
         $response->assertStatus(200);

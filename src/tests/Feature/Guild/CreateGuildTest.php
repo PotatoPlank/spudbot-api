@@ -12,7 +12,6 @@ class CreateGuildTest extends TestCase
 
     /**
      * @dataProvider validGuildData
-     * @throws \Random\RandomException
      */
     public function test_user_can_create_guild($discordId, $channelAnnounceId, $channelThreadAnnounceId): void
     {

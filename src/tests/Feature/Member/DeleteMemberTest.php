@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Member;
 
-use App\Models\Guild;
 use App\Models\Member;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -14,7 +13,6 @@ class DeleteMemberTest extends TestCase
 
     public function test_user_can_delete_member(): void
     {
-        Guild::factory()->create();
         $member = Member::factory()->create();
         $user = User::factory()->create();
         $response = $this->actingAs($user)->delete(route('members.destroy', ['member' => $member->external_id]));

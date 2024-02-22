@@ -2,8 +2,6 @@
 
 namespace Tests\Feature\Thread;
 
-use App\Models\Channel;
-use App\Models\Guild;
 use App\Models\Thread;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -26,8 +24,6 @@ class GetThreadTest extends TestCase
     {
         $route = route('threads.index');
         $user = User::factory()->create();
-        Guild::factory()->create();
-        Channel::factory()->create();
         Thread::factory()->create();
 
         $response = $this->actingAs($user)->get($route);
@@ -40,8 +36,6 @@ class GetThreadTest extends TestCase
     public function test_user_can_search_thread(): void
     {
         $user = User::factory()->create();
-        Guild::factory()->create();
-        Channel::factory()->create();
         $thread = Thread::factory()->create();
 
         $response = $this->actingAs($user)
@@ -54,8 +48,6 @@ class GetThreadTest extends TestCase
     public function test_user_can_get_thread(): void
     {
         $user = User::factory()->create();
-        Guild::factory()->create();
-        Channel::factory()->create();
         $thread = Thread::factory()->create();
 
         $response = $this->actingAs($user)

@@ -17,7 +17,6 @@ class UpdateChannelTest extends TestCase
      */
     public function test_user_can_update_channel($discordId, $guild): void
     {
-        Guild::factory()->create();
         $user = User::factory()->create();
         $channel = Channel::factory()->create();
         $payload = [

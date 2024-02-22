@@ -3,7 +3,6 @@
 namespace Tests\Feature\Directory;
 
 use App\Models\Directory;
-use App\Models\Guild;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -14,7 +13,6 @@ class UpdateDirectoryTest extends TestCase
 
     public function test_user_cannot_update_directory(): void
     {
-        Guild::factory()->create();
         $user = User::factory()->create();
         $directory = Directory::factory()->create();
         $payload = [
@@ -27,7 +25,7 @@ class UpdateDirectoryTest extends TestCase
         $response->assertStatus(302);
     }
 
-    public function test_user_cannot_update_invalid_thread(): void
+    public function test_user_cannot_update_invalid_directory(): void
     {
         $user = User::factory()->create();
         $directory = Directory::factory()->create();

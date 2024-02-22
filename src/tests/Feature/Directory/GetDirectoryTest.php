@@ -3,7 +3,6 @@
 namespace Tests\Feature\Directory;
 
 use App\Models\Directory;
-use App\Models\Guild;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -25,7 +24,6 @@ class GetDirectoryTest extends TestCase
     {
         $route = route('directories.index');
         $user = User::factory()->create();
-        Guild::factory()->create();
         Directory::factory()->create();
 
         $response = $this->actingAs($user)->get($route);
@@ -38,7 +36,6 @@ class GetDirectoryTest extends TestCase
     public function test_user_can_search_directory(): void
     {
         $user = User::factory()->create();
-        Guild::factory()->create();
         $directory = Directory::factory()->create();
 
         $response = $this->actingAs($user)
@@ -51,7 +48,6 @@ class GetDirectoryTest extends TestCase
     public function test_user_can_get_directory(): void
     {
         $user = User::factory()->create();
-        Guild::factory()->create();
         $directory = Directory::factory()->create();
 
         $response = $this->actingAs($user)

@@ -2,8 +2,6 @@
 
 namespace Tests\Feature\Thread;
 
-use App\Models\Channel;
-use App\Models\Guild;
 use App\Models\Thread;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -15,9 +13,7 @@ class UpdateThreadTest extends TestCase
 
     public function test_user_can_update_thread(): void
     {
-        Guild::factory()->create();
         $user = User::factory()->create();
-        Channel::factory()->create();
         $thread = Thread::factory()->create();
         $payload = [
             'tag' => fake()->words(3, true),

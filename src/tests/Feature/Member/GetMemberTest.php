@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Member;
 
-use App\Models\Guild;
 use App\Models\Member;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -25,7 +24,6 @@ class GetMemberTest extends TestCase
     {
         $route = route('members.index');
         $user = User::factory()->create();
-        Guild::factory()->create();
         Member::factory()->create();
 
         $response = $this->actingAs($user)->get($route);
@@ -38,7 +36,6 @@ class GetMemberTest extends TestCase
     public function test_user_can_search_member(): void
     {
         $user = User::factory()->create();
-        Guild::factory()->create();
         $member = Member::factory()->create();
 
         $response = $this->actingAs($user)
@@ -51,7 +48,6 @@ class GetMemberTest extends TestCase
     public function test_user_can_search_member_username(): void
     {
         $user = User::factory()->create();
-        Guild::factory()->create();
         $member = Member::factory()->create();
 
         $response = $this->actingAs($user)
@@ -64,7 +60,6 @@ class GetMemberTest extends TestCase
     public function test_user_can_get_member(): void
     {
         $user = User::factory()->create();
-        Guild::factory()->create();
         $member = Member::factory()->create();
 
         $response = $this->actingAs($user)

@@ -63,7 +63,6 @@ class UpdateMemberTest extends TestCase
     public function test_user_cannot_verify_self(): void
     {
         $user = User::factory()->create();
-        Guild::factory()->create();
         $member = Member::factory()->create();
 
         $payload = [
@@ -78,7 +77,6 @@ class UpdateMemberTest extends TestCase
     public function test_user_cannot_be_verified_twice(): void
     {
         $user = User::factory()->create();
-        Guild::factory()->create();
         $member = Member::factory()->verified()->create();
 
         $payload = [
@@ -93,7 +91,6 @@ class UpdateMemberTest extends TestCase
     public function test_unverified_user_cannot_verify(): void
     {
         $user = User::factory()->create();
-        Guild::factory()->create();
         $member = Member::factory()->create();
 
         $payload = [
@@ -108,7 +105,6 @@ class UpdateMemberTest extends TestCase
     public function test_an_invalid_user_cannot_verify(): void
     {
         $user = User::factory()->create();
-        Guild::factory()->create();
         $member = Member::factory()->create();
 
         $payload = [
