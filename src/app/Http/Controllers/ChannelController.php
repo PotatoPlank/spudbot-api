@@ -15,11 +15,15 @@ class ChannelController extends Controller
     {
         $fields = $request->validate([
             'discord_id' => 'string',
+            'guild' => ['uuid', 'exists:App\Models\Guild,external_id',]
         ]);
 
         $channels = Channel::query();
         if (isset($fields['discord_id'])) {
             $channels->whereDiscordId($fields['discord_id']);
+        }
+        if (isset($fields['guild'])) {
+            $channels->whereGuildId(Guild::whereExternalId($fields['guild'])->first()?->id);
         }
         return [
             'status' => true,

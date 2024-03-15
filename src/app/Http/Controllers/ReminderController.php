@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Channel;
 use App\Models\Guild;
 use App\Models\Reminder;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ReminderController extends Controller
@@ -17,14 +18,19 @@ class ReminderController extends Controller
         $fields = $request->validate([
             'guild' => ['uuid', 'exists:App\Models\Guild,external_id',],
             'channel' => ['uuid', 'exists:App\Models\Channel,external_id',],
+            'has_passed' => ['date_format:Y-m-d\TH:i:sP',],
+            'scheduled_at' => ['date',],
         ]);
 
         $reminders = Reminder::query();
         if (isset($fields['guild'])) {
-            $reminders->whereGuildId(Guild::whereExternalId($fields['guild'])->first()->id);
+            $reminders->whereGuildId(Guild::whereExternalId($fields['guild'])->first()?->id);
         }
         if (isset($fields['channel'])) {
-            $reminders->whereChannelId(Channel::whereExternalId($fields['channel'])->first()->id);
+            $reminders->whereChannelId(Channel::whereExternalId($fields['channel'])->first()?->id);
+        }
+        if (isset($fields['has_passed'])) {
+            $reminders->where('scheduled_at', '<=', Carbon::parse($fields['has_passed'])->toDateTimeString());
         }
         return [
             'status' => true,

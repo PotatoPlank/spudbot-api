@@ -14,7 +14,15 @@ class EventAttendanceController extends Controller
      */
     public function index(Request $request, Event $event)
     {
+        $fields = $request->validate([
+            'member' => ['uuid', 'exists:App\Models\Member,external_id',],
+        ]);
+
         $attendances = $event->eventAttendances();
+
+        if ($fields['member']) {
+            $attendances->whereMemberId(Member::whereExternalId($fields['member'])->first()?->id);
+        }
 
         return [
             'status' => true,

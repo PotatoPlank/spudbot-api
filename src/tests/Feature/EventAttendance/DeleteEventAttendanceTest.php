@@ -17,7 +17,7 @@ class DeleteEventAttendanceTest extends TestCase
         $eventAttendance = EventAttendance::factory()->create();
         $response = $this->actingAs($user)->delete(
             route('events.attendance.destroy', [
-                'event' => $eventAttendance->event()->first()->external_id,
+                'event' => $eventAttendance->event()->first()?->external_id,
                 'eventAttendance' => $eventAttendance->external_id,
             ])
         );

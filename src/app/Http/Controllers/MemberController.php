@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Guild;
 use App\Models\Member;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\Rule;
 
 class MemberController extends Controller
 {
@@ -16,6 +18,11 @@ class MemberController extends Controller
         $fields = $request->validate([
             'username' => 'string',
             'discord_id' => 'string',
+            'guild' => ['uuid', 'exists:App\Models\Guild,external_id',],
+            'guild_discord_id' => 'string',
+            'sort' => ['string',],
+            'direction' => ['string', Rule::in(['asc', 'desc'])],
+            'limit' => ['numeric', 'min:1', 'max:50'],
         ]);
         $members = Member::query();
         if (isset($fields['username'])) {
@@ -24,9 +31,24 @@ class MemberController extends Controller
         if (isset($fields['discord_id'])) {
             $members->whereDiscordId($fields['discord_id']);
         }
+        if (isset($fields['guild'])) {
+            $members->whereGuildId(Guild::whereExternalId($fields['guild'])->first()?->id);
+        }
+        if (isset($fields['guild_discord_id'])) {
+            $members->whereGuildId(Guild::whereDiscordId($fields['guild_discord_id'])->first()?->id);
+        }
+        $orderByColumn = 'username';
+        $direction = 'asc';
+        if (isset($fields['sort']) && Schema::hasColumn('members', $fields['sort'])) {
+            $orderByColumn = $fields['sort'];
+            $direction = $fields['direction'] ?? 'asc';
+        }
         return [
             'status' => true,
-            'data' => $members->get(),
+            'data' => $members
+                ->orderBy($orderByColumn, $direction)
+                ->limit($fields['limit'] ?? 50)
+                ->get(),
         ];
     }
 
@@ -69,6 +91,11 @@ class MemberController extends Controller
     public function show(Member $member)
     {
         return $member;
+    }
+
+    public function attendance(Member $member)
+    {
+        return $member->eventAttendance()->get();
     }
 
     /**

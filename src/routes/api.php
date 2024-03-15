@@ -61,4 +61,5 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
 
     Route::get('leaderboard/comments', [LeaderboardController::class, 'comments']);
+    Route::get('members/{member}/attendance', [MemberController::class, 'attendance']);
 });

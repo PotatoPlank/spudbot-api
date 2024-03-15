@@ -16,11 +16,15 @@ class ThreadController extends Controller
     {
         $fields = $request->validate([
             'discord_id' => 'string',
+            'guild' => ['uuid', 'exists:App\Models\Guild,external_id',],
         ]);
 
         $threads = Thread::query();
         if (isset($fields['discord_id'])) {
             $threads->whereDiscordId($fields['discord_id']);
+        }
+        if (isset($fields['guild'])) {
+            $threads->whereGuildId(Guild::whereExternalId($fields['guild'])->first()?->id);
         }
         return [
             'status' => true,

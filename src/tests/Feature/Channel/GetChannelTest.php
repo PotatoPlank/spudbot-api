@@ -33,7 +33,7 @@ class GetChannelTest extends TestCase
         $this->assertNotCount(0, $response['data']);
     }
 
-    public function test_user_can_search_channel(): void
+    public function test_user_can_search_channel_by_discord_id(): void
     {
         $user = User::factory()->create();
         $channel = Channel::factory()->create();
@@ -43,6 +43,18 @@ class GetChannelTest extends TestCase
         $response->assertStatus(200);
 
         $this->assertEquals($response['data'][0]['discord_id'], $channel->discord_id);
+    }
+
+    public function test_user_can_search_channel_by_guild(): void
+    {
+        $user = User::factory()->create();
+        $channel = Channel::factory()->create();
+
+        $response = $this->actingAs($user)
+            ->get(route('channels.index', ['guild' => $channel->guild->external_id]));
+        $response->assertStatus(200);
+
+        $this->assertEquals($response['data'][0]['guild_id'], $channel->guild->id);
     }
 
     public function test_user_can_get_channel(): void
