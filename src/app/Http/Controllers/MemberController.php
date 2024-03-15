@@ -113,20 +113,20 @@ class MemberController extends Controller
         if (isset($fields['verified_by_member'])) {
             if ($member->verifiedBy()->exists()) {
                 return response([
-                    'success' => false,
+                    'status' => false,
                     'message' => 'This member is already verified.'
                 ], 302);
             }
             if ($member->external_id === $fields['verified_by_member']) {
                 return response([
-                    'success' => false,
+                    'status' => false,
                     'message' => 'A member cannot verify themselves.'
                 ], 302);
             }
             $verifyingMember = Member::whereExternalId($fields['verified_by_member'])->first();
             if (!$verifyingMember->verifiedBy()->exists()) {
                 return response([
-                    'success' => false,
+                    'status' => false,
                     'message' => 'An unverified member cannot verify another member.'
                 ], 302);
             }

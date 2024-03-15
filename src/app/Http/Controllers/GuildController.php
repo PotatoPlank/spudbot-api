@@ -72,7 +72,7 @@ class GuildController extends Controller
         $guild->save();
 
         return [
-            'success' => true,
+            'status' => true,
             'data' => $guild,
         ];
     }

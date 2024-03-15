@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Member;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,21 +13,21 @@ class AuthController extends Controller
     public function attempt(Request $request)
     {
         $credentials = $request->validate([
-            'email' =>'required',
+            'email' => 'required',
             'password' => 'required',
         ]);
 
-        if(Auth::attempt($credentials)){
+        if (Auth::attempt($credentials)) {
             Auth::user()->tokens()->delete();
             return [
-                'success' => true,
+                'status' => true,
                 'token' => Auth::user()->createToken('api')->plainTextToken,
                 'user' => auth('sanctum')->user(),
             ];
         }
 
         return [
-            'success' => false,
+            'status' => false,
         ];
     }
 
