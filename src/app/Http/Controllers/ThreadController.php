@@ -41,7 +41,7 @@ class ThreadController extends Controller
             'discord_id' => ['required', 'unique:App\Models\Thread,discord_id'],
             'guild' => ['required', 'uuid', 'exists:App\Models\Guild,external_id'],
             'channel' => ['required', 'uuid', 'exists:App\Models\Channel,external_id'],
-            'tag' => ['string', 'nullable'],
+            'tag' => ['nullable', 'string',],
         ]);
 
         $thread = new Thread();
@@ -71,7 +71,7 @@ class ThreadController extends Controller
     public function update(Request $request, Thread $thread)
     {
         $fields = $request->validate([
-            'tag' => ['required', 'string', 'nullable'],
+            'tag' => ['required', 'nullable', 'string',],
         ]);
 
         $thread->tag = $fields['tag'] ?? '';

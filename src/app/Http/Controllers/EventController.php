@@ -51,11 +51,11 @@ class EventController extends Controller
     {
         $fields = $request->validate([
             'guild' => ['required', 'uuid', 'exists:App\Models\Guild,external_id'],
-            'discord_channel_id' => ['string', 'nullable'],
+            'discord_channel_id' => ['nullable', 'string'],
             'name' => ['string', 'required'],
             'type' => [Rule::in(['SESH', 'NATIVE'], 'required')],
-            'sesh_id' => ['string', 'nullable',],
-            'native_id' => ['string', 'nullable',],
+            'sesh_id' => ['nullable', 'string',],
+            'native_id' => ['nullable', 'string',],
             'scheduled_at' => ['date_format:Y-m-d\TH:i:sP', 'required',],
         ]);
 
@@ -89,7 +89,7 @@ class EventController extends Controller
     public function update(Request $request, Event $event)
     {
         $fields = $request->validate([
-            'discord_channel_id' => ['string', 'nullable'],
+            'discord_channel_id' => ['nullable', 'string',],
             'name' => ['string', 'required'],
             'scheduled_at' => ['date_format:Y-m-d\TH:i:sP', 'required',],
         ]);

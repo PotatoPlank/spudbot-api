@@ -60,9 +60,9 @@ class MemberController extends Controller
         $fields = $request->validate([
             'discord_id' => ['required', 'unique:App\Models\Member,discord_id'],
             'guild' => ['uuid', 'required', 'exists:App\Models\Guild,external_id'],
-            'total_comments' => ['numeric', 'nullable', 'min:0'],
+            'total_comments' => ['nullable', 'numeric', 'min:0'],
             'username' => ['string', 'required'],
-            'verified_by_member' => ['uuid', 'nullable', 'exists:App\Models\Member,external_id'],
+            'verified_by_member' => ['nullable', 'uuid', 'exists:App\Models\Member,external_id'],
         ]);
 
         if (!$fields['total_comments']) {

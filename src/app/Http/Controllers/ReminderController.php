@@ -47,9 +47,9 @@ class ReminderController extends Controller
             'guild' => ['required', 'uuid', 'exists:App\Models\Guild,external_id',],
             'channel' => ['required', 'uuid', 'exists:App\Models\Channel,external_id',],
             'description' => ['string', 'required',],
-            'mention_role' => ['string', 'nullable',],
+            'mention_role' => ['nullable', 'string',],
             'scheduled_at' => ['date_format:Y-m-d\TH:i:sP', 'required',],
-            'repeats' => ['string', 'nullable',],
+            'repeats' => ['nullable', 'string',],
         ]);
 
         $reminder = new Reminder();
