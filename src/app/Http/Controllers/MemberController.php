@@ -106,7 +106,7 @@ class MemberController extends Controller
         $fields = $request->validate([
             'total_comments' => ['integer', 'min:0'],
             'username' => ['string',],
-            'verified_by_member' => ['uuid', 'exists:App\Models\Member,external_id'],
+            'verified_by_member' => ['nullable', 'uuid', 'exists:App\Models\Member,external_id'],
             'increment_comments' => ['bool', 'prohibited_unless:total_comments,null'],
         ]);
         $member->fill($fields);
