@@ -11,6 +11,17 @@ class Thread extends Model
 {
     use HasFactory, HasUuid;
 
+    protected $hidden = [
+        'id',
+        'guild_id',
+        'channel_id',
+    ];
+
+    protected $with = [
+        'guild',
+        'channel',
+    ];
+
     public function guild(): BelongsTo
     {
         return $this->belongsTo(Guild::class);
