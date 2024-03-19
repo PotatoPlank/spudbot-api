@@ -71,7 +71,7 @@ class ThreadController extends Controller
     public function update(Request $request, Thread $thread)
     {
         $fields = $request->validate([
-            'tag' => ['required', 'nullable', 'string',],
+            'tag' => ['nullable', 'string',],
         ]);
 
         $thread->tag = $fields['tag'] ?? '';
