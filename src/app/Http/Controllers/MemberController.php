@@ -117,15 +117,6 @@ class MemberController extends Controller
                     'message' => 'A member cannot verify themselves.'
                 ], 302);
             }
-            $verifyingMember = Member::whereExternalId($fields['verified_by_member'])->first();
-            if (!$verifyingMember->verifiedBy()->exists()) {
-                return response([
-                    'status' => false,
-                    'message' => 'An unverified member cannot verify another member.'
-                ], 302);
-            }
-
-
             $member->verifiedBy()->associate(Member::whereExternalId($fields['verified_by_member'])->first());
         }
         if (isset($fields['increment_comments'])) {
