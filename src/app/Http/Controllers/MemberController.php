@@ -111,12 +111,6 @@ class MemberController extends Controller
         ]);
         $member->fill($fields);
         if (isset($fields['verified_by_member'])) {
-            if ($member->verifiedBy()->exists()) {
-                return response([
-                    'status' => false,
-                    'message' => 'This member is already verified.'
-                ], 302);
-            }
             if ($member->external_id === $fields['verified_by_member']) {
                 return response([
                     'status' => false,
