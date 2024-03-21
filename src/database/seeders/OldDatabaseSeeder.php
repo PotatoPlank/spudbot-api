@@ -210,8 +210,13 @@ class OldDatabaseSeeder extends Seeder
 
     protected function resetSequence(Connection $connection, string $table, string $column = 'id'): void
     {
-        $connection->raw(
-            "SELECT SETVAL(pg_get_serial_sequence('threads', '$column'), (SELECT MAX($column) FROM $table))"
-        );
+        $max = $connection->select('SELECT MAX($column) as next_val FROM $table)');
+        if (!$max || (int)$max->next_val <= 0) {
+            throw new \BadMethodCallException("Unable to get next value for $table");
+        }
+        $query = "ALTER TABLE $table
+    ALTER COLUMN $column RESTART SET START {$max->next_val};
+";
+        $connection->select($query);
     }
 }
