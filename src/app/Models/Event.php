@@ -12,6 +12,10 @@ class Event extends Model
 {
     use HasFactory, HasUuid;
 
+    protected $hidden = [
+        'id',
+    ];
+
     protected $fillable = [
         'discord_channel_id',
         'name',
