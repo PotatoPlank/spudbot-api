@@ -19,12 +19,12 @@ class EventController extends Controller
             'channel' => ['string',],
             'native_id' => ['string',],
             'sesh_id' => ['string',],
-            'guild_discord_id' => 'string',
+            'guild_discord_id' => ['string',],
         ]);
 
         $events = Event::query();
         if (isset($fields['guild'])) {
-            $events->whereGuildId(Guild::whereExternalId($fields['guild'])->first()?->id);
+            $events->whereGuildId(Guild::whereExternalId($fields['guild'])->first()->id);
         }
         if (isset($fields['channel'])) {
             $events->whereDiscordChannelId($fields['channel']);

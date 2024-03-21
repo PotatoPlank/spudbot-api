@@ -24,7 +24,6 @@ class Event extends Model
 
     protected $with = [
         'guild',
-        'eventAttendances',
     ];
 
     public function guild(): BelongsTo
