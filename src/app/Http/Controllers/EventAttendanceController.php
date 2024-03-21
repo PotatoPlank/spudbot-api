@@ -42,7 +42,7 @@ class EventAttendanceController extends Controller
         ]);
 
         $eventAttendance = new EventAttendance();
-        $eventAttendance->event()->associate($event->first());
+        $eventAttendance->event()->associate($event);
         $eventAttendance->member()->associate(Member::whereExternalId($fields['member'])->first());
         $eventAttendance->status = $fields['status'];
         $eventAttendance->no_show = $fields['no_show'];
