@@ -20,7 +20,7 @@ class EventAttendanceController extends Controller
 
         $attendances = $event->eventAttendances();
 
-        if ($fields['member']) {
+        if (isset($fields['member'])) {
             $attendances->whereMemberId(Member::whereExternalId($fields['member'])->first()?->id);
         }
 
