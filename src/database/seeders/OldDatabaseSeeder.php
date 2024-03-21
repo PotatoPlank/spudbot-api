@@ -210,7 +210,7 @@ class OldDatabaseSeeder extends Seeder
 
     protected function resetSequence(string $table, string $column = 'id'): void
     {
-        $query = "SELECT setval('{$table}_{$column}_seq', select max({$column}) from {$table}, true)";
+        $query = "SELECT setval('{$table}_{$column}_seq', (select max({$column}) from {$table}), true)";
         DB::select($query);
     }
 }
