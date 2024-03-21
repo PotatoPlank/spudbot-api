@@ -50,7 +50,7 @@ class OldDatabaseSeeder extends Seeder
                 }
             }
         }
-        $this->resetSequence($connection, 'threads');
+        $this->resetSequence('threads');
     }
 
     protected function channels(Connection $connection)
@@ -70,7 +70,7 @@ class OldDatabaseSeeder extends Seeder
                 }
             }
         }
-        $this->resetSequence($connection, 'channels');
+        $this->resetSequence('channels');
     }
 
     protected function members(Connection $connection)
@@ -93,7 +93,7 @@ class OldDatabaseSeeder extends Seeder
                 }
             }
         }
-        $this->resetSequence($connection, 'members');
+        $this->resetSequence('members');
     }
 
     protected function guilds(Connection $connection)
@@ -114,7 +114,7 @@ class OldDatabaseSeeder extends Seeder
                 }
             }
         }
-        $this->resetSequence($connection, 'guilds');
+        $this->resetSequence('guilds');
     }
 
     protected function reminders(Connection $connection)
@@ -138,7 +138,7 @@ class OldDatabaseSeeder extends Seeder
                 }
             }
         }
-        $this->resetSequence($connection, 'reminders');
+        $this->resetSequence('reminders');
     }
 
     protected function events(Connection $connection)
@@ -162,7 +162,7 @@ class OldDatabaseSeeder extends Seeder
                 }
             }
         }
-        $this->resetSequence($connection, 'events');
+        $this->resetSequence('events');
     }
 
     protected function eventAttendance(Connection $connection)
@@ -184,7 +184,7 @@ class OldDatabaseSeeder extends Seeder
                 }
             }
         }
-        $this->resetSequence($connection, 'event_attendances');
+        $this->resetSequence('event_attendances');
     }
 
     protected function directories(Connection $connection)
@@ -205,16 +205,12 @@ class OldDatabaseSeeder extends Seeder
                 }
             }
         }
-        $this->resetSequence($connection, 'directories');
+        $this->resetSequence('directories');
     }
 
-    protected function resetSequence(Connection $connection, string $table, string $column = 'id'): void
+    protected function resetSequence(string $table, string $column = 'id'): void
     {
-        $max = DB::select("SELECT MAX($column) as next_val FROM $table");
-        if (!$max || (int)$max[0]->next_val <= 0) {
-            throw new \BadMethodCallException("Unable to get next value for $table");
-        }
-        $query = "ALTER TABLE $table ALTER COLUMN $column RESTART SET START {$max[0]->next_val}";
+        $query = "SELECT setval('{$table}_{$column}_seq', select max({$column}) from {$table}, true)";
         DB::select($query);
     }
 }
