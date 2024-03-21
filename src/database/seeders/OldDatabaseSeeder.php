@@ -210,7 +210,7 @@ class OldDatabaseSeeder extends Seeder
 
     protected function resetSequence(Connection $connection, string $table, string $column = 'id'): void
     {
-        $max = $connection->select('SELECT MAX($column) as next_val FROM $table)');
+        $max = $connection->select("SELECT MAX($column) as next_val FROM $table)");
         if (!$max || (int)$max->next_val <= 0) {
             throw new \BadMethodCallException("Unable to get next value for $table");
         }
