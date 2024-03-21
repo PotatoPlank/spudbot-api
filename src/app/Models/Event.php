@@ -22,6 +22,11 @@ class Event extends Model
         'scheduled_at',
     ];
 
+    protected $with = [
+        'guild',
+        'eventAttendance',
+    ];
+
     public function guild(): BelongsTo
     {
         return $this->belongsTo(Guild::class);
