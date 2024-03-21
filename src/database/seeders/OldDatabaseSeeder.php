@@ -214,9 +214,7 @@ class OldDatabaseSeeder extends Seeder
         if (!$max || (int)$max[0]->next_val <= 0) {
             throw new \BadMethodCallException("Unable to get next value for $table");
         }
-        $query = "ALTER TABLE $table
-    ALTER COLUMN $column RESTART SET START {$max[0]->next_val};
-";
+        $query = "ALTER TABLE $table ALTER COLUMN $column RESTART SET START {$max[0]->next_val}";
         $connection->select($query);
     }
 }
