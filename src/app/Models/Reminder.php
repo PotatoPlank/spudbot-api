@@ -18,6 +18,11 @@ class Reminder extends Model
         'repeats',
     ];
 
+    protected $with = [
+        'guild',
+        'channel',
+    ];
+
 
     public function guild(): BelongsTo
     {
