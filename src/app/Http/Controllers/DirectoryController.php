@@ -15,11 +15,15 @@ class DirectoryController extends Controller
     {
         $fields = $request->validate([
             'embed_id' => 'string',
+            'forum_channel' => ['uuid', 'exists:App\Models\Channel,external_id',],
         ]);
 
         $directory = Directory::query();
         if (isset($fields['embed_id'])) {
             $directory->whereEmbedId($fields['embed_id']);
+        }
+        if (isset($fields['forum_channel'])) {
+            $directory->whereForumChannelId(Channel::whereExternalId($fields['forum_channel'])->first()?->id);
         }
         return [
             'status' => true,

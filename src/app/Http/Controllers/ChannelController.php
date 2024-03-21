@@ -15,7 +15,7 @@ class ChannelController extends Controller
     {
         $fields = $request->validate([
             'discord_id' => 'string',
-            'guild' => ['uuid', 'exists:App\Models\Guild,external_id',]
+            'guild' => ['uuid', 'exists:App\Models\Guild,external_id',],
         ]);
 
         $channels = Channel::query();
