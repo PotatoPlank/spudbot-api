@@ -20,6 +20,10 @@ class Channel extends Model
         'guild_id',
     ];
 
+    protected $with = [
+        'guild',
+    ];
+
     public function guild(): BelongsTo
     {
         return $this->belongsTo(Guild::class);
