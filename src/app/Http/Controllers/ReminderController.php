@@ -82,7 +82,7 @@ class ReminderController extends Controller
     public function update(Request $request, Reminder $reminder)
     {
         $fields = $request->validate([
-            'mention_role' => ['string',],
+            'mention_role' => ['nullable', 'string',],
             'scheduled_at' => ['date_format:Y-m-d\TH:i:sP',],
             'repeats' => ['string',],
             'description' => ['string',],
