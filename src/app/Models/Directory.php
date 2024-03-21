@@ -15,6 +15,11 @@ class Directory extends Model
         'id',
     ];
 
+    protected $with = [
+        'directoryChannel',
+        'forumChannel',
+    ];
+
     public function directoryChannel(): BelongsTo
     {
         return $this->belongsTo(Channel::class);
