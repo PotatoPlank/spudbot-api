@@ -50,6 +50,7 @@ class OldDatabaseSeeder extends Seeder
                 }
             }
         }
+        $this->resetSequence($connection, 'threads');
     }
 
     protected function channels(Connection $connection)
@@ -69,6 +70,7 @@ class OldDatabaseSeeder extends Seeder
                 }
             }
         }
+        $this->resetSequence($connection, 'channels');
     }
 
     protected function members(Connection $connection)
@@ -91,6 +93,7 @@ class OldDatabaseSeeder extends Seeder
                 }
             }
         }
+        $this->resetSequence($connection, 'members');
     }
 
     protected function guilds(Connection $connection)
@@ -111,6 +114,7 @@ class OldDatabaseSeeder extends Seeder
                 }
             }
         }
+        $this->resetSequence($connection, 'guilds');
     }
 
     protected function reminders(Connection $connection)
@@ -134,6 +138,7 @@ class OldDatabaseSeeder extends Seeder
                 }
             }
         }
+        $this->resetSequence($connection, 'reminders');
     }
 
     protected function events(Connection $connection)
@@ -157,6 +162,7 @@ class OldDatabaseSeeder extends Seeder
                 }
             }
         }
+        $this->resetSequence($connection, 'events');
     }
 
     protected function eventAttendance(Connection $connection)
@@ -178,6 +184,7 @@ class OldDatabaseSeeder extends Seeder
                 }
             }
         }
+        $this->resetSequence($connection, 'event_attendances');
     }
 
     protected function directories(Connection $connection)
@@ -198,5 +205,13 @@ class OldDatabaseSeeder extends Seeder
                 }
             }
         }
+        $this->resetSequence($connection, 'directories');
+    }
+
+    protected function resetSequence(Connection $connection, string $table, string $column = 'id'): void
+    {
+        $connection->raw(
+            "SELECT SETVAL(pg_get_serial_sequence('threads', '$column'), (SELECT MAX($column) FROM $table))"
+        );
     }
 }
