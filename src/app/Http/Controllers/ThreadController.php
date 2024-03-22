@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Channel;
 use App\Models\Guild;
 use App\Models\Thread;
+use App\Rules\UniqueDiscordId;
 use Illuminate\Http\Request;
 
 class ThreadController extends Controller
@@ -38,7 +39,7 @@ class ThreadController extends Controller
     public function store(Request $request)
     {
         $fields = $request->validate([
-            'discord_id' => ['required', 'unique:App\Models\Thread,discord_id'],
+            'discord_id' => ['required', new UniqueDiscordId(Thread::query()),],
             'guild' => ['required', 'uuid', 'exists:App\Models\Guild,external_id'],
             'channel' => ['required', 'uuid', 'exists:App\Models\Channel,external_id'],
             'tag' => ['nullable', 'string',],

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Guild;
 use App\Models\Member;
+use App\Rules\UniqueDiscordId;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
@@ -58,7 +59,7 @@ class MemberController extends Controller
     public function store(Request $request)
     {
         $fields = $request->validate([
-            'discord_id' => ['required', 'unique:App\Models\Member,discord_id'],
+            'discord_id' => ['required', new UniqueDiscordId(Member::query()),],
             'guild' => ['uuid', 'required', 'exists:App\Models\Guild,external_id'],
             'total_comments' => ['nullable', 'numeric', 'min:0'],
             'username' => ['string', 'required'],

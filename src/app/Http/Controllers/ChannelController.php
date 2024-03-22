@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Channel;
 use App\Models\Guild;
+use App\Rules\UniqueDiscordId;
 use Illuminate\Http\Request;
 
 class ChannelController extends Controller
@@ -37,7 +38,7 @@ class ChannelController extends Controller
     public function store(Request $request)
     {
         $fields = $request->validate([
-            'discord_id' => ['required', 'unique:App\Models\Channel,discord_id'],
+            'discord_id' => ['required', new UniqueDiscordId(Channel::query()),],
             'guild' => ['uuid', 'required', 'exists:App\Models\Guild,external_id'],
         ]);
 
@@ -67,7 +68,7 @@ class ChannelController extends Controller
     public function update(Request $request, Channel $channel)
     {
         $fields = $request->validate([
-            'discord_id' => ['unique:App\Models\Channel,discord_id'],
+            'discord_id' => ['string',],
             'guild' => ['uuid', 'exists:App\Models\Guild,external_id'],
         ]);
 

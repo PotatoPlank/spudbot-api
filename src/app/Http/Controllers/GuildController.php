@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Guild;
+use App\Rules\UniqueDiscordId;
 use Illuminate\Http\Request;
 
 class GuildController extends Controller
@@ -31,7 +32,7 @@ class GuildController extends Controller
     public function store(Request $request)
     {
         $fields = $request->validate([
-            'discord_id' => ['required', 'unique:App\Models\Guild,discord_id'],
+            'discord_id' => ['required', new UniqueDiscordId(Guild::query()),],
             'channel_announce_id' => [],
             'channel_thread_announce_id' => [],
         ]);
