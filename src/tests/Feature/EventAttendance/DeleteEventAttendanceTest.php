@@ -22,7 +22,6 @@ class DeleteEventAttendanceTest extends TestCase
             ])
         );
 
-        $response->assertStatus(200);
-        $this->assertTrue($response['status']);
+        $response->assertStatus(204);
     }
 }

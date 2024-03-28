@@ -19,7 +19,6 @@ class DeleteReminderTest extends TestCase
             route('reminders.destroy', ['reminder' => $reminder->external_id])
         );
 
-        $response->assertStatus(200);
-        $this->assertTrue($response['status']);
+        $response->assertStatus(204);
     }
 }

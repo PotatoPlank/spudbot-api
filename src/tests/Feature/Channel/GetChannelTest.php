@@ -29,7 +29,6 @@ class GetChannelTest extends TestCase
         $response = $this->actingAs($user)->get($route);
         $response->assertStatus(200);
 
-        $this->assertTrue($response['status']);
         $this->assertNotCount(0, $response['data']);
     }
 
@@ -54,7 +53,7 @@ class GetChannelTest extends TestCase
             ->get(route('channels.index', ['guild' => $channel->guild->external_id]));
         $response->assertStatus(200);
 
-        $this->assertEquals($response['data'][0]['guild_id'], $channel->guild->id);
+        $this->assertEquals($response['data'][0]['guild']['external_id'], $channel->guild->external_id);
     }
 
     public function test_user_can_get_channel(): void
@@ -66,6 +65,6 @@ class GetChannelTest extends TestCase
             ->get(route('channels.show', ['channel' => $channel->external_id]));
         $response->assertStatus(200);
 
-        $this->assertEquals($response['discord_id'], $channel->discord_id);
+        $this->assertEquals($response['data']['discord_id'], $channel->discord_id);
     }
 }

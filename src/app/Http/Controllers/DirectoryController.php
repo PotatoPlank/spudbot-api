@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\DirectoryResource;
 use App\Models\Channel;
 use App\Models\Directory;
 use Illuminate\Http\Request;
@@ -18,17 +19,14 @@ class DirectoryController extends Controller
             'forum_channel' => ['uuid', 'exists:App\Models\Channel,external_id',],
         ]);
 
-        $directory = Directory::query();
+        $directory = Directory::with(['forumChannel', 'directoryChannel']);
         if (isset($fields['embed_id'])) {
             $directory->whereEmbedId($fields['embed_id']);
         }
         if (isset($fields['forum_channel'])) {
             $directory->whereForumChannelId(Channel::whereExternalId($fields['forum_channel'])->first()?->id);
         }
-        return [
-            'status' => true,
-            'data' => $directory->get(),
-        ];
+        return DirectoryResource::collection($directory->get());
     }
 
     /**
@@ -48,10 +46,7 @@ class DirectoryController extends Controller
         $directory->embed_id = $fields['embed_id'];
         $directory->save();
 
-        return [
-            'status' => true,
-            'data' => $directory,
-        ];
+        return new DirectoryResource($directory->load(['forumChannel', 'directoryChannel']));
     }
 
     /**
@@ -59,7 +54,7 @@ class DirectoryController extends Controller
      */
     public function show(Directory $directory)
     {
-        return $directory;
+        return new DirectoryResource($directory->load(['forumChannel', 'directoryChannel']));
     }
 
     /**
@@ -68,7 +63,6 @@ class DirectoryController extends Controller
     public function update(Request $request, Directory $directory)
     {
         return response([
-            'status' => false,
             'message' => 'Directories cannot be updated.',
         ], 302);
     }
@@ -80,8 +74,6 @@ class DirectoryController extends Controller
     {
         $directory->delete();
 
-        return [
-            'status' => true,
-        ];
+        return response(status: 204);
     }
 }

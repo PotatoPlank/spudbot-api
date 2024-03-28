@@ -12,18 +12,10 @@ class Event extends Model
 {
     use HasFactory, HasUuid;
 
-    protected $hidden = [
-        'id',
-    ];
-
     protected $fillable = [
         'discord_channel_id',
         'name',
         'scheduled_at',
-    ];
-
-    protected $with = [
-        'guild',
     ];
 
     public function guild(): BelongsTo

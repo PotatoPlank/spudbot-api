@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\EventAttendanceResource;
 use App\Models\Event;
 use App\Models\EventAttendance;
 use App\Models\Member;
@@ -18,16 +19,13 @@ class EventAttendanceController extends Controller
             'member' => ['uuid', 'exists:App\Models\Member,external_id',],
         ]);
 
-        $attendances = $event->eventAttendances();
+        $attendances = $event->eventAttendances()->with(['event', 'member']);
 
         if (isset($fields['member'])) {
             $attendances->whereMemberId(Member::whereExternalId($fields['member'])->first()?->id);
         }
 
-        return [
-            'status' => true,
-            'data' => $attendances->get(),
-        ];
+        return EventAttendanceResource::collection($attendances->get());
     }
 
     /**
@@ -48,10 +46,7 @@ class EventAttendanceController extends Controller
         $eventAttendance->no_show = $fields['no_show'];
         $eventAttendance->save();
 
-        return [
-            'status' => true,
-            'data' => $eventAttendance,
-        ];
+        return new EventAttendanceResource($eventAttendance->load(['event', 'member']));
     }
 
     /**
@@ -59,7 +54,7 @@ class EventAttendanceController extends Controller
      */
     public function show(Event $event, EventAttendance $eventAttendance)
     {
-        return $eventAttendance;
+        return new EventAttendanceResource($eventAttendance->load(['event', 'member']));
     }
 
     /**
@@ -76,10 +71,7 @@ class EventAttendanceController extends Controller
         $eventAttendance->save();
 
 
-        return [
-            'status' => true,
-            'data' => $eventAttendance,
-        ];
+        return new EventAttendanceResource($eventAttendance->load(['event', 'member']));
     }
 
     /**
@@ -89,8 +81,6 @@ class EventAttendanceController extends Controller
     {
         $eventAttendance->delete();
 
-        return [
-            'status' => true,
-        ];
+        return response(status: 204);
     }
 }

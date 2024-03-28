@@ -29,7 +29,6 @@ class GetReminderTest extends TestCase
         $response = $this->actingAs($user)->get($route);
         $response->assertStatus(200);
 
-        $this->assertTrue($response['status']);
         $this->assertNotCount(0, $response['data']);
     }
 

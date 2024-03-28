@@ -29,7 +29,6 @@ class GetEventTest extends TestCase
         $response = $this->actingAs($user)->get($route);
         $response->assertStatus(200);
 
-        $this->assertTrue($response['status']);
         $this->assertNotCount(0, $response['data']);
     }
 
@@ -90,6 +89,6 @@ class GetEventTest extends TestCase
             ->get(route('events.show', ['event' => $event->external_id]));
         $response->assertStatus(200);
 
-        $this->assertEquals($response['type'], $event->type);
+        $this->assertEquals($response['data']['type'], $event->type);
     }
 }

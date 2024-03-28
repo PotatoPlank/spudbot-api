@@ -11,18 +11,9 @@ class EventAttendance extends Model
 {
     use HasFactory, HasUuid;
 
-    protected $hidden = [
-        'id',
-    ];
-
     protected $fillable = [
         'status',
         'no_show',
-    ];
-
-    protected $with = [
-        'event',
-        'member',
     ];
 
     public function event(): BelongsTo

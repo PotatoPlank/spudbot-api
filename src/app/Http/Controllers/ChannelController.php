@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ChannelResource;
 use App\Models\Channel;
 use App\Models\Guild;
 use App\Rules\UniqueDiscordId;
@@ -19,17 +20,14 @@ class ChannelController extends Controller
             'guild' => ['uuid', 'exists:App\Models\Guild,external_id',],
         ]);
 
-        $channels = Channel::query();
+        $channels = Channel::with('guild');
         if (isset($fields['discord_id'])) {
             $channels->whereDiscordId($fields['discord_id']);
         }
         if (isset($fields['guild'])) {
             $channels->whereGuildId(Guild::whereExternalId($fields['guild'])->first()?->id);
         }
-        return [
-            'status' => true,
-            'data' => $channels->get(),
-        ];
+        return ChannelResource::collection($channels->get());
     }
 
     /**
@@ -48,10 +46,7 @@ class ChannelController extends Controller
         $channel->save();
 
 
-        return [
-            'status' => true,
-            'data' => $channel,
-        ];
+        return new ChannelResource($channel->load('guild'));
     }
 
     /**
@@ -59,7 +54,7 @@ class ChannelController extends Controller
      */
     public function show(Channel $channel)
     {
-        return $channel;
+        return new ChannelResource($channel->load('guild'));
     }
 
     /**
@@ -83,10 +78,7 @@ class ChannelController extends Controller
         $channel->save();
 
 
-        return [
-            'status' => true,
-            'data' => $channel,
-        ];
+        return new ChannelResource($channel->load('guild'));
     }
 
     /**
@@ -96,8 +88,6 @@ class ChannelController extends Controller
     {
         $channel->delete();
 
-        return [
-            'status' => true,
-        ];
+        return response(status: 204);
     }
 }

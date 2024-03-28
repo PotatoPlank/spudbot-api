@@ -12,17 +12,6 @@ class Member extends Model
 {
     use HasFactory, HasUuid;
 
-    protected $hidden = [
-        'id',
-        'guild_id',
-        'verified_by',
-    ];
-
-    protected $with = [
-        'guild',
-        'verifiedBy',
-    ];
-
     protected $fillable = [
         'discord_id',
         'total_comments',

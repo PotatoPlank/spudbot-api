@@ -20,7 +20,7 @@ class UpdateChannelTest extends TestCase
         $user = User::factory()->create();
         $channel = Channel::factory()->create();
         $payload = [
-            'discord_id' => $discordId,
+            'discord_id' => (string)$discordId,
         ];
         if ($guild !== null) {
             $payload['guild'] = Guild::factory()->create()->external_id;

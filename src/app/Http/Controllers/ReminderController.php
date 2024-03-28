@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ReminderResource;
 use App\Models\Channel;
 use App\Models\Guild;
 use App\Models\Reminder;
@@ -22,7 +23,7 @@ class ReminderController extends Controller
             'scheduled_at' => ['date',],
         ]);
 
-        $reminders = Reminder::query();
+        $reminders = Reminder::with(['guild', 'channel']);
         if (isset($fields['guild'])) {
             $reminders->whereGuildId(Guild::whereExternalId($fields['guild'])->first()?->id);
         }
@@ -32,10 +33,7 @@ class ReminderController extends Controller
         if (isset($fields['has_passed'])) {
             $reminders->where('scheduled_at', '<=', Carbon::parse($fields['has_passed'])->toDateTimeString());
         }
-        return [
-            'status' => true,
-            'data' => $reminders->get(),
-        ];
+        return ReminderResource::collection($reminders->get());
     }
 
     /**
@@ -62,10 +60,7 @@ class ReminderController extends Controller
         $reminder->scheduled_at = $fields['scheduled_at'];
         $reminder->save();
 
-        return [
-            'status' => true,
-            'data' => $reminder,
-        ];
+        return new ReminderResource($reminder->load(['guild', 'channel']));
     }
 
     /**
@@ -94,10 +89,7 @@ class ReminderController extends Controller
         $reminder->save();
 
 
-        return [
-            'status' => true,
-            'data' => $reminder,
-        ];
+        return new ReminderResource($reminder->load(['guild', 'channel']));
     }
 
     /**
@@ -107,8 +99,6 @@ class ReminderController extends Controller
     {
         $reminder->delete();
 
-        return [
-            'status' => true,
-        ];
+        return response(status: 204);
     }
 }

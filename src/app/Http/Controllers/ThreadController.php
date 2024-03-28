@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ThreadResource;
 use App\Models\Channel;
 use App\Models\Guild;
 use App\Models\Thread;
@@ -20,17 +21,14 @@ class ThreadController extends Controller
             'guild' => ['uuid', 'exists:App\Models\Guild,external_id',],
         ]);
 
-        $threads = Thread::query();
+        $threads = Thread::with(['guild', 'channel']);
         if (isset($fields['discord_id'])) {
             $threads->whereDiscordId($fields['discord_id']);
         }
         if (isset($fields['guild'])) {
             $threads->whereGuildId(Guild::whereExternalId($fields['guild'])->first()?->id);
         }
-        return [
-            'status' => true,
-            'data' => $threads->get(),
-        ];
+        return ThreadResource::collection($threads->get());
     }
 
     /**
@@ -52,10 +50,7 @@ class ThreadController extends Controller
         $thread->tag = $fields['tag'] ?? '';
         $thread->save();
 
-        return [
-            'status' => true,
-            'data' => $thread,
-        ];
+        return new ThreadResource($thread->load(['guild', 'channel']));
     }
 
     /**
@@ -63,7 +58,7 @@ class ThreadController extends Controller
      */
     public function show(Thread $thread)
     {
-        return $thread;
+        return new ThreadResource($thread->load(['guild', 'channel']));
     }
 
     /**
@@ -78,10 +73,7 @@ class ThreadController extends Controller
         $thread->tag = $fields['tag'] ?? '';
         $thread->save();
 
-        return [
-            'status' => true,
-            'data' => $thread,
-        ];
+        return new ThreadResource($thread->load(['guild', 'channel']));
     }
 
     /**
@@ -91,8 +83,6 @@ class ThreadController extends Controller
     {
         $thread->delete();
 
-        return [
-            'status' => true,
-        ];
+        return response(status: 204);
     }
 }

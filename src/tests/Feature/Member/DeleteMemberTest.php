@@ -17,7 +17,6 @@ class DeleteMemberTest extends TestCase
         $user = User::factory()->create();
         $response = $this->actingAs($user)->delete(route('members.destroy', ['member' => $member->external_id]));
 
-        $response->assertStatus(200);
-        $this->assertTrue($response['status']);
+        $response->assertStatus(204);
     }
 }

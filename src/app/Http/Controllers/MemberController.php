@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\MemberResource;
 use App\Models\Guild;
 use App\Models\Member;
 use App\Rules\UniqueDiscordId;
@@ -25,7 +26,7 @@ class MemberController extends Controller
             'direction' => ['string', Rule::in(['asc', 'desc'])],
             'limit' => ['numeric', 'min:1', 'max:50'],
         ]);
-        $members = Member::query();
+        $members = Member::with(['verifiedBy', 'guild']);
         if (isset($fields['username'])) {
             $members->whereUsername($fields['username']);
         }
@@ -44,13 +45,11 @@ class MemberController extends Controller
             $orderByColumn = $fields['sort'];
             $direction = $fields['direction'] ?? 'asc';
         }
-        return [
-            'status' => true,
-            'data' => $members
-                ->orderBy($orderByColumn, $direction)
+        return MemberResource::collection(
+            $members->orderBy($orderByColumn, $direction)
                 ->limit($fields['limit'] ?? 50)
-                ->get(),
-        ];
+                ->get()
+        );
     }
 
     /**
@@ -80,10 +79,7 @@ class MemberController extends Controller
         }
         $member->save();
 
-        return [
-            'status' => true,
-            'data' => $member,
-        ];
+        return new MemberResource($member->load(['verifiedBy', 'guild']));
     }
 
     /**
@@ -91,7 +87,7 @@ class MemberController extends Controller
      */
     public function show(Member $member)
     {
-        return $member;
+        return new MemberResource($member->load(['verifiedBy', 'guild']));
     }
 
     public function attendance(Member $member)
@@ -125,10 +121,7 @@ class MemberController extends Controller
         }
         $member->save();
 
-        return [
-            'status' => true,
-            'data' => $member,
-        ];
+        return new MemberResource($member->load(['verifiedBy', 'guild']));
     }
 
     /**
@@ -138,8 +131,6 @@ class MemberController extends Controller
     {
         $member->delete();
 
-        return [
-            'status' => true,
-        ];
+        return response(status: 204);
     }
 }

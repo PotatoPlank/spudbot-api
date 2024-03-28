@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\EventResource;
 use App\Models\Event;
 use App\Models\Guild;
 use Illuminate\Http\Request;
@@ -22,7 +23,7 @@ class EventController extends Controller
             'guild_discord_id' => ['string',],
         ]);
 
-        $events = Event::query();
+        $events = Event::with(['guild']);
         if (isset($fields['guild'])) {
             $events->whereGuildId(Guild::whereExternalId($fields['guild'])->first()->id);
         }
@@ -38,10 +39,7 @@ class EventController extends Controller
         if (isset($fields['guild_discord_id'])) {
             $events->whereGuildId(Guild::whereDiscordId($fields['guild_discord_id'])->first()?->id);
         }
-        return [
-            'status' => true,
-            'data' => $events->get(),
-        ];
+        return EventResource::collection($events->get());
     }
 
     /**
@@ -69,10 +67,7 @@ class EventController extends Controller
         $event->scheduled_at = $fields['scheduled_at'];
         $event->save();
 
-        return [
-            'status' => true,
-            'data' => $event,
-        ];
+        return new EventResource($event->load(['guild']));
     }
 
     /**
@@ -80,7 +75,7 @@ class EventController extends Controller
      */
     public function show(Event $event)
     {
-        return $event;
+        return new EventResource($event->load(['guild']));
     }
 
     /**
@@ -98,10 +93,7 @@ class EventController extends Controller
         $event->save();
 
 
-        return [
-            'status' => true,
-            'data' => $event,
-        ];
+        return new EventResource($event->load(['guild']));
     }
 
     /**
@@ -111,8 +103,6 @@ class EventController extends Controller
     {
         $event->delete();
 
-        return [
-            'status' => true,
-        ];
+        return response(status: 204);
     }
 }

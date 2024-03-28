@@ -27,7 +27,7 @@ class CreateEventAttendanceTest extends TestCase
         $route = route('events.attendance.store', [
             'event' => $event->external_id,
         ]);
-        var_dump($route);
+
         $payload = [
             'member' => $member->external_id,
             'status' => $status,
@@ -35,7 +35,7 @@ class CreateEventAttendanceTest extends TestCase
         ];
         $response = $this->actingAs($user)->post($route, $payload);
 
-        $response->assertStatus(200);
+        $response->assertStatus(201);
     }
 
     /**

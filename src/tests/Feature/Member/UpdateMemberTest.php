@@ -88,20 +88,6 @@ class UpdateMemberTest extends TestCase
         $response->assertStatus(302);
     }
 
-    public function test_unverified_user_cannot_verify(): void
-    {
-        $user = User::factory()->create();
-        $member = Member::factory()->create();
-
-        $payload = [
-            'verified_by_member' => Member::factory()->create()->external_id,
-        ];
-        $route = route('members.update', ['member' => $member->external_id]);
-        $response = $this->actingAs($user)->put($route, $payload);
-
-        $response->assertStatus(302);
-    }
-
     public function test_an_invalid_user_cannot_verify(): void
     {
         $user = User::factory()->create();

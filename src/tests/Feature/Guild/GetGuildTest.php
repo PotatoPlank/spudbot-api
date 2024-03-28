@@ -27,7 +27,6 @@ class GetGuildTest extends TestCase
         $response = $this->actingAs($user)->get(route('guilds.index'));
         $response->assertStatus(200);
 
-        $this->assertTrue($response['status']);
         $this->assertNotCount(0, $response['data']);
     }
 
@@ -52,6 +51,6 @@ class GetGuildTest extends TestCase
             ->get(route('guilds.show', ['guild' => $guild->external_id]));
         $response->assertStatus(200);
 
-        $this->assertEquals($response['discord_id'], $guild->discord_id);
+        $this->assertEquals($response['data']['discord_id'], $guild->discord_id);
     }
 }

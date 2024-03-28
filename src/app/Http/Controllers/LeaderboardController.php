@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Guild;
+use App\Http\Resources\MemberResource;
 use App\Models\Member;
-use Illuminate\Http\Request;
 
 class LeaderboardController extends Controller
 {
@@ -13,6 +12,6 @@ class LeaderboardController extends Controller
      */
     public function comments()
     {
-        return Member::limit(30)->orderBy('total_comments', 'desc')->get();
+        return MemberResource::collection(Member::limit(30)->orderBy('total_comments', 'desc')->get());
     }
 }

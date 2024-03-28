@@ -29,7 +29,6 @@ class GetDirectoryTest extends TestCase
         $response = $this->actingAs($user)->get($route);
         $response->assertStatus(200);
 
-        $this->assertTrue($response['status']);
         $this->assertNotCount(0, $response['data']);
     }
 
@@ -54,6 +53,6 @@ class GetDirectoryTest extends TestCase
             ->get(route('directories.show', ['directory' => $directory->external_id]));
         $response->assertStatus(200);
 
-        $this->assertEquals($response['embed_id'], $directory->embed_id);
+        $this->assertEquals($response['data']['embed_id'], $directory->embed_id);
     }
 }

@@ -37,7 +37,7 @@ class CreateEventTest extends TestCase
         ];
         $response = $this->actingAs($user)->post($route, $payload);
 
-        $response->assertStatus(200);
+        $response->assertStatus(201);
     }
 
     /**

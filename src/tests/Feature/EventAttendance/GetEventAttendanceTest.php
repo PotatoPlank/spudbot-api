@@ -34,7 +34,6 @@ class GetEventAttendanceTest extends TestCase
         $response = $this->actingAs($user)->get($route);
         $response->assertStatus(200);
 
-        $this->assertTrue($response['status']);
         $this->assertNotCount(0, $response['data']);
     }
 
@@ -51,6 +50,6 @@ class GetEventAttendanceTest extends TestCase
             ->get($route);
         $response->assertStatus(200);
 
-        $this->assertEquals($response['status'], $attendance->status);
+        $this->assertEquals($response['data']['status'], $attendance->status);
     }
 }

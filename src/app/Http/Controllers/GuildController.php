@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\GuildResource;
 use App\Models\Guild;
 use App\Rules\UniqueDiscordId;
 use Illuminate\Http\Request;
@@ -20,10 +21,7 @@ class GuildController extends Controller
         if (isset($fields['discord_id'])) {
             $guilds->whereDiscordId($fields['discord_id']);
         }
-        return [
-            'status' => true,
-            'data' => $guilds->get(),
-        ];
+        return GuildResource::collection($guilds->get());
     }
 
     /**
@@ -41,10 +39,7 @@ class GuildController extends Controller
 
         $guild->save();
 
-        return [
-            'status' => true,
-            'data' => $guild,
-        ];
+        return new GuildResource($guild);
     }
 
     /**
@@ -52,7 +47,7 @@ class GuildController extends Controller
      */
     public function show(Guild $guild)
     {
-        return $guild;
+        return new GuildResource($guild);
     }
 
     /**
@@ -72,10 +67,7 @@ class GuildController extends Controller
         }
         $guild->save();
 
-        return [
-            'status' => true,
-            'data' => $guild,
-        ];
+        return new GuildResource($guild);
     }
 
     /**

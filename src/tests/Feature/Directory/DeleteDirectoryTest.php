@@ -19,7 +19,6 @@ class DeleteDirectoryTest extends TestCase
             route('directories.destroy', ['directory' => $directory->external_id])
         );
 
-        $response->assertStatus(200);
-        $this->assertTrue($response['status']);
+        $response->assertStatus(204);
     }
 }

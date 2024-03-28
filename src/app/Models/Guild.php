@@ -11,10 +11,6 @@ class Guild extends Model
 {
     use HasFactory, HasUuid;
 
-    protected $hidden = [
-        'id',
-    ];
-
     protected $fillable = [
         'discord_id',
         'channel_announce_id',

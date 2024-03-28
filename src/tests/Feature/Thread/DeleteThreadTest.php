@@ -17,7 +17,6 @@ class DeleteThreadTest extends TestCase
         $thread = Thread::factory()->create();
         $response = $this->actingAs($user)->delete(route('threads.destroy', ['thread' => $thread->external_id]));
 
-        $response->assertStatus(200);
-        $this->assertTrue($response['status']);
+        $response->assertStatus(204);
     }
 }

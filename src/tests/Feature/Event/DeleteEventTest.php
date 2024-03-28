@@ -19,7 +19,6 @@ class DeleteEventTest extends TestCase
             route('events.destroy', ['event' => $event->external_id])
         );
 
-        $response->assertStatus(200);
-        $this->assertTrue($response['status']);
+        $response->assertStatus(204);
     }
 }

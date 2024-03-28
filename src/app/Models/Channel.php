@@ -11,17 +11,9 @@ class Channel extends Model
 {
     use HasFactory, HasUuid;
 
-    protected $hidden = [
-        'id',
-    ];
-
     protected $fillable = [
         'discord_id',
         'guild_id',
-    ];
-
-    protected $with = [
-        'guild',
     ];
 
     public function guild(): BelongsTo
