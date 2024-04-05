@@ -2,36 +2,34 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Reminder\ReminderCreateRequest;
+use App\Http\Requests\Reminder\ReminderRequest;
 use App\Http\Resources\ReminderResource;
 use App\Models\Channel;
 use App\Models\Guild;
 use App\Models\Reminder;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 
 class ReminderController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(ReminderRequest $request)
     {
-        $fields = $request->validate([
-            'guild' => ['uuid', 'exists:App\Models\Guild,external_id',],
-            'channel' => ['uuid', 'exists:App\Models\Channel,external_id',],
-            'has_passed' => ['date_format:Y-m-d\TH:i:sP',],
-            'scheduled_at' => ['date',],
-        ]);
-
         $reminders = Reminder::with(['guild', 'channel']);
-        if (isset($fields['guild'])) {
-            $reminders->whereGuildId(Guild::whereExternalId($fields['guild'])->first()?->id);
+        if ($request->has('guild')) {
+            $reminders->whereGuildId(Guild::whereExternalId($request->validated('guild'))->first()?->id);
         }
-        if (isset($fields['channel'])) {
-            $reminders->whereChannelId(Channel::whereExternalId($fields['channel'])->first()?->id);
+        if ($request->has('channel')) {
+            $reminders->whereChannelId(Channel::whereExternalId($request->validated('channel'))->first()?->id);
         }
-        if (isset($fields['has_passed'])) {
-            $reminders->where('scheduled_at', '<=', Carbon::parse($fields['has_passed'])->toDateTimeString());
+        if ($request->has('has_passed')) {
+            $reminders->where(
+                'scheduled_at',
+                '<=',
+                Carbon::parse($request->validated('has_passed'))->toDateTimeString()
+            );
         }
         return ReminderResource::collection($reminders->get());
     }
@@ -39,25 +37,16 @@ class ReminderController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ReminderCreateRequest $request)
     {
-        $fields = $request->validate([
-            'guild' => ['required', 'uuid', 'exists:App\Models\Guild,external_id',],
-            'channel' => ['required', 'uuid', 'exists:App\Models\Channel,external_id',],
-            'description' => ['string', 'required',],
-            'mention_role' => ['nullable', 'string',],
-            'scheduled_at' => ['date_format:Y-m-d\TH:i:sP', 'required',],
-            'repeats' => ['nullable', 'string',],
-        ]);
-
         $reminder = new Reminder();
-        $reminder->description = $fields['description'];
-        $reminder->mention_role = $fields['mention_role'];
-        $reminder->scheduled_at = $fields['scheduled_at'];
-        $reminder->repeats = $fields['repeats'];
-        $reminder->channel()->associate(Channel::whereExternalId($fields['channel'])->first());
-        $reminder->guild()->associate(Guild::whereExternalId($fields['guild'])->first());
-        $reminder->scheduled_at = $fields['scheduled_at'];
+        $reminder->description = $request->validated('description');
+        $reminder->mention_role = $request->validated('mention_role');
+        $reminder->scheduled_at = $request->validated('scheduled_at');
+        $reminder->repeats = $request->validated('repeats');
+        $reminder->channel()->associate(Channel::whereExternalId($request->validated('channel'))->first());
+        $reminder->guild()->associate(Guild::whereExternalId($request->validated('guild'))->first());
+        $reminder->scheduled_at = $request->validated('scheduled_at');
         $reminder->save();
 
         return new ReminderResource($reminder->load(['guild', 'channel']));
@@ -74,16 +63,18 @@ class ReminderController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Reminder $reminder)
+    public function update(ReminderRequest $request, Reminder $reminder)
     {
-        $fields = $request->validate([
-            'mention_role' => ['nullable', 'string',],
-            'scheduled_at' => ['date_format:Y-m-d\TH:i:sP',],
-            'repeats' => ['string',],
-            'description' => ['string',],
-        ]);
-
-        $reminder->fill($fields);
+        $reminder->fill(
+            $request->safe()->only(
+                [
+                    'mention_role',
+                    'scheduled_at',
+                    'repeats',
+                    'description',
+                ]
+            )
+        );
 
 
         $reminder->save();

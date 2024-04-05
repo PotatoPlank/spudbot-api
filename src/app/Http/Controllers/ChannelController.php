@@ -2,30 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Channel\ChannelCreateRequest;
+use App\Http\Requests\Channel\ChannelRequest;
 use App\Http\Resources\ChannelResource;
 use App\Models\Channel;
 use App\Models\Guild;
-use App\Rules\UniqueDiscordId;
-use Illuminate\Http\Request;
 
 class ChannelController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(ChannelRequest $request)
     {
-        $fields = $request->validate([
-            'discord_id' => 'string',
-            'guild' => ['uuid', 'exists:App\Models\Guild,external_id',],
-        ]);
-
         $channels = Channel::with('guild');
-        if (isset($fields['discord_id'])) {
-            $channels->whereDiscordId($fields['discord_id']);
+        if ($request->has('discord_id')) {
+            $channels->whereDiscordId($request->validated('discord_id'));
         }
-        if (isset($fields['guild'])) {
-            $channels->whereGuildId(Guild::whereExternalId($fields['guild'])->first()?->id);
+        if ($request->has('guild')) {
+            $channels->whereGuildId(Guild::whereExternalId($request->validated('guild'))->first()?->id);
         }
         return ChannelResource::collection($channels->get());
     }
@@ -33,16 +28,11 @@ class ChannelController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ChannelCreateRequest $request)
     {
-        $fields = $request->validate([
-            'discord_id' => ['required', new UniqueDiscordId(Channel::query()),],
-            'guild' => ['uuid', 'required', 'exists:App\Models\Guild,external_id'],
-        ]);
-
         $channel = new Channel();
-        $channel->discord_id = $fields['discord_id'];
-        $channel->guild()->associate(Guild::whereExternalId($fields['guild'])->first());
+        $channel->discord_id = $request->validated('discord_id');
+        $channel->guild()->associate(Guild::whereExternalId($request->validated('guild'))->first());
         $channel->save();
 
 
@@ -60,18 +50,13 @@ class ChannelController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Channel $channel)
+    public function update(ChannelRequest $request, Channel $channel)
     {
-        $fields = $request->validate([
-            'discord_id' => ['string',],
-            'guild' => ['uuid', 'exists:App\Models\Guild,external_id'],
-        ]);
-
-        if (isset($fields['discord_id'])) {
-            $channel->discord_id = $fields['discord_id'];
+        if ($request->has('discord_id')) {
+            $channel->discord_id = $request->validated('discord_id');
         }
-        if (isset($fields['guild'])) {
-            $channel->guild()->associate(Guild::whereExternalId($fields['guild'])->first());
+        if ($request->has('guild')) {
+            $channel->guild()->associate(Guild::whereExternalId($request->validated('guild'))->first());
         }
 
 

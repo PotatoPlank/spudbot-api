@@ -2,24 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Guild\GuildCreateRequest;
+use App\Http\Requests\Guild\GuildRequest;
 use App\Http\Resources\GuildResource;
 use App\Models\Guild;
-use App\Rules\UniqueDiscordId;
-use Illuminate\Http\Request;
 
 class GuildController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(GuildRequest $request)
     {
-        $fields = $request->validate([
-            'discord_id' => 'string',
-        ]);
         $guilds = Guild::query();
-        if (isset($fields['discord_id'])) {
-            $guilds->whereDiscordId($fields['discord_id']);
+        if ($request->has('discord_id')) {
+            $guilds->whereDiscordId($request->validated('discord_id'));
         }
         return GuildResource::collection($guilds->get());
     }
@@ -27,15 +24,10 @@ class GuildController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(GuildCreateRequest $request)
     {
-        $fields = $request->validate([
-            'discord_id' => ['required', new UniqueDiscordId(Guild::query()),],
-            'channel_announce_id' => [],
-            'channel_thread_announce_id' => [],
-        ]);
         $guild = new Guild();
-        $guild->fill($fields);
+        $guild->fill($request->validated());
 
         $guild->save();
 
@@ -53,17 +45,13 @@ class GuildController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Guild $guild)
+    public function update(GuildRequest $request, Guild $guild)
     {
-        $fields = $request->validate([
-            'channel_announce_id' => [],
-            'channel_thread_announce_id' => [],
-        ]);
-        if (isset($fields['channel_announce_id'])) {
-            $guild->channel_announce_id = $fields['channel_announce_id'];
+        if ($request->has('channel_announce_id')) {
+            $guild->channel_announce_id = $request->validated('channel_announce_id');
         }
-        if (isset($fields['channel_thread_announce_id'])) {
-            $guild->channel_thread_announce_id = $fields['channel_thread_announce_id'];
+        if ($request->has('channel_thread_announce_id')) {
+            $guild->channel_thread_announce_id = $request->validated('channel_thread_announce_id');
         }
         $guild->save();
 

@@ -2,52 +2,42 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Member\MemberCreateRequest;
+use App\Http\Requests\Member\MemberRequest;
 use App\Http\Resources\MemberResource;
 use App\Models\Guild;
 use App\Models\Member;
-use App\Rules\UniqueDiscordId;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Validation\Rule;
 
 class MemberController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(MemberRequest $request)
     {
-        $fields = $request->validate([
-            'username' => 'string',
-            'discord_id' => 'string',
-            'guild' => ['uuid', 'exists:App\Models\Guild,external_id',],
-            'guild_discord_id' => 'string',
-            'sort' => ['string',],
-            'direction' => ['string', Rule::in(['asc', 'desc'])],
-            'limit' => ['numeric', 'min:1', 'max:50'],
-        ]);
         $members = Member::with(['verifiedBy', 'guild']);
-        if (isset($fields['username'])) {
-            $members->whereUsername($fields['username']);
+        if ($request->has('username')) {
+            $members->whereUsername($request->validated('username'));
         }
-        if (isset($fields['discord_id'])) {
-            $members->whereDiscordId($fields['discord_id']);
+        if ($request->has('discord_id')) {
+            $members->whereDiscordId($request->validated('discord_id'));
         }
-        if (isset($fields['guild'])) {
-            $members->whereGuildId(Guild::whereExternalId($fields['guild'])->first()?->id);
+        if ($request->has('guild')) {
+            $members->whereGuildId(Guild::whereExternalId($request->validated('guild'))->first()?->id);
         }
-        if (isset($fields['guild_discord_id'])) {
-            $members->whereGuildId(Guild::whereDiscordId($fields['guild_discord_id'])->first()?->id);
+        if ($request->has('guild_discord_id')) {
+            $members->whereGuildId(Guild::whereDiscordId($request->validated('guild_discord_id'))->first()?->id);
         }
         $orderByColumn = 'username';
         $direction = 'asc';
-        if (isset($fields['sort']) && Schema::hasColumn('members', $fields['sort'])) {
-            $orderByColumn = $fields['sort'];
-            $direction = $fields['direction'] ?? 'asc';
+        if ($request->has('sort') && Schema::hasColumn('members', $request->validated('sort'))) {
+            $orderByColumn = $request->validated('sort');
+            $direction = $request->validated('direction', 'asc');
         }
         return MemberResource::collection(
             $members->orderBy($orderByColumn, $direction)
-                ->limit($fields['limit'] ?? 50)
+                ->limit($request->validated('limit') ?? 50)
                 ->get()
         );
     }
@@ -55,27 +45,19 @@ class MemberController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(MemberCreateRequest $request)
     {
-        $fields = $request->validate([
-            'discord_id' => ['required', new UniqueDiscordId(Member::query()),],
-            'guild' => ['uuid', 'required', 'exists:App\Models\Guild,external_id'],
-            'total_comments' => ['nullable', 'numeric', 'min:0'],
-            'username' => ['string', 'required'],
-            'verified_by_member' => ['nullable', 'uuid', 'exists:App\Models\Member,external_id'],
-        ]);
-
-        if (!$fields['total_comments']) {
-            $fields['total_comments'] = 0;
-        }
-
         $member = new Member();
-        $member->fill($fields);
+
+        $member->fill([
+            ...$request->validated(),
+            'total_comments' => $request->validated('total_comments') ?? 0,
+        ]);
         $member->guild()
-            ->associate(Guild::whereExternalId($fields['guild'])->first());
-        if (isset($fields['verified_by_member'])) {
+            ->associate(Guild::whereExternalId($request->validated('guild'))->first());
+        if ($request->has('verified_by_member')) {
             $member->verifiedBy()
-                ->associate(Member::whereExternalId($fields['verified_by_member'])->first());
+                ->associate(Member::whereExternalId($request->validated('verified_by_member'))->first());
         }
         $member->save();
 
@@ -98,25 +80,21 @@ class MemberController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Member $member)
+    public function update(MemberRequest $request, Member $member)
     {
-        $fields = $request->validate([
-            'total_comments' => ['integer', 'min:0'],
-            'username' => ['string',],
-            'verified_by_member' => ['nullable', 'uuid', 'exists:App\Models\Member,external_id'],
-            'increment_comments' => ['bool', 'prohibited_unless:total_comments,null'],
-        ]);
-        $member->fill($fields);
-        if (isset($fields['verified_by_member'])) {
-            if ($member->external_id === $fields['verified_by_member']) {
+        $member->fill($request->validated());
+        if ($request->has('verified_by_member')) {
+            if ($member->external_id === $request->validated('verified_by_member')) {
                 return response([
                     'status' => false,
                     'message' => 'A member cannot verify themselves.'
                 ], 302);
             }
-            $member->verifiedBy()->associate(Member::whereExternalId($fields['verified_by_member'])->first());
+            $member->verifiedBy()->associate(
+                Member::whereExternalId($request->validated('verified_by_member'))->first()
+            );
         }
-        if (isset($fields['increment_comments'])) {
+        if ($request->has('increment_comments')) {
             ++$member->total_comments;
         }
         $member->save();

@@ -2,29 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Directory\DirectoryCreateRequest;
+use App\Http\Requests\Directory\DirectoryRequest;
 use App\Http\Resources\DirectoryResource;
 use App\Models\Channel;
 use App\Models\Directory;
-use Illuminate\Http\Request;
 
 class DirectoryController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(DirectoryRequest $request)
     {
-        $fields = $request->validate([
-            'embed_id' => 'string',
-            'forum_channel' => ['uuid', 'exists:App\Models\Channel,external_id',],
-        ]);
-
         $directory = Directory::with(['forumChannel', 'directoryChannel']);
-        if (isset($fields['embed_id'])) {
-            $directory->whereEmbedId($fields['embed_id']);
+        if ($request->has('embed_id')) {
+            $directory->whereEmbedId($request->validated('embed_id'));
         }
-        if (isset($fields['forum_channel'])) {
-            $directory->whereForumChannelId(Channel::whereExternalId($fields['forum_channel'])->first()?->id);
+        if ($request->has('forum_channel')) {
+            $directory->whereForumChannelId(
+                Channel::whereExternalId($request->validated('forum_channel'))->first()?->id
+            );
         }
         return DirectoryResource::collection($directory->get());
     }
@@ -32,18 +30,16 @@ class DirectoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(DirectoryCreateRequest $request)
     {
-        $fields = $request->validate([
-            'embed_id' => 'string',
-            'directory_channel' => ['required', 'uuid', 'exists:App\Models\Channel,external_id'],
-            'forum_channel' => ['required', 'uuid', 'exists:App\Models\Channel,external_id'],
-        ]);
-
         $directory = new Directory();
-        $directory->directoryChannel()->associate(Channel::whereExternalId($fields['directory_channel'])->first());
-        $directory->forumChannel()->associate(Channel::whereExternalId($fields['forum_channel'])->first());
-        $directory->embed_id = $fields['embed_id'];
+        $directory->directoryChannel()->associate(
+            Channel::whereExternalId($request->validated('directory_channel'))->first()
+        );
+        $directory->forumChannel()->associate(
+            Channel::whereExternalId($request->validated('forum_channel'))->first()
+        );
+        $directory->embed_id = $request->validated('embed_id');
         $directory->save();
 
         return new DirectoryResource($directory->load(['forumChannel', 'directoryChannel']));
@@ -60,7 +56,7 @@ class DirectoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Directory $directory)
+    public function update(DirectoryRequest $request, Directory $directory)
     {
         return response([
             'message' => 'Directories cannot be updated.',

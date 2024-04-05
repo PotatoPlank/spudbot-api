@@ -2,27 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EventAttendance\EventAttendanceCreateRequest;
+use App\Http\Requests\EventAttendance\EventAttendanceRequest;
 use App\Http\Resources\EventAttendanceResource;
 use App\Models\Event;
 use App\Models\EventAttendance;
 use App\Models\Member;
-use Illuminate\Http\Request;
 
 class EventAttendanceController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request, Event $event)
+    public function index(EventAttendanceRequest $request, Event $event)
     {
-        $fields = $request->validate([
-            'member' => ['uuid', 'exists:App\Models\Member,external_id',],
-        ]);
-
         $attendances = $event->eventAttendances()->with(['event', 'member']);
 
-        if (isset($fields['member'])) {
-            $attendances->whereMemberId(Member::whereExternalId($fields['member'])->first()?->id);
+        if ($request->has('member')) {
+            $attendances->whereMemberId(Member::whereExternalId($request->validated('member'))->first()?->id);
         }
 
         return EventAttendanceResource::collection($attendances->get());
@@ -31,19 +28,13 @@ class EventAttendanceController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, Event $event)
+    public function store(EventAttendanceCreateRequest $request, Event $event)
     {
-        $fields = $request->validate([
-            'member' => ['required', 'uuid', 'exists:App\Models\Member,external_id'],
-            'status' => ['string', 'required'],
-            'no_show' => ['boolean', 'required'],
-        ]);
-
         $eventAttendance = new EventAttendance();
         $eventAttendance->event()->associate($event);
-        $eventAttendance->member()->associate(Member::whereExternalId($fields['member'])->first());
-        $eventAttendance->status = $fields['status'];
-        $eventAttendance->no_show = $fields['no_show'];
+        $eventAttendance->member()->associate(Member::whereExternalId($request->validated('member'))->first());
+        $eventAttendance->status = $request->validated('status');
+        $eventAttendance->no_show = $request->validated('no_show');
         $eventAttendance->save();
 
         return new EventAttendanceResource($eventAttendance->load(['event', 'member']));
@@ -60,14 +51,9 @@ class EventAttendanceController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Event $event, EventAttendance $eventAttendance)
+    public function update(EventAttendanceRequest $request, Event $event, EventAttendance $eventAttendance)
     {
-        $fields = $request->validate([
-            'status' => ['string',],
-            'no_show' => ['boolean',],
-        ]);
-
-        $eventAttendance->fill($fields);
+        $eventAttendance->fill($request->validated());
         $eventAttendance->save();
 
 

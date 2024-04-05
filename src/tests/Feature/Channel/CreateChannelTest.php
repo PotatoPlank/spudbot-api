@@ -28,6 +28,7 @@ class CreateChannelTest extends TestCase
         ];
         $response = $this->actingAs($user)->post($route, $payload);
 
+
         $response->assertStatus(201);
     }
 

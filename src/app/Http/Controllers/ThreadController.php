@@ -2,31 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Thread\ThreadCreateRequest;
+use App\Http\Requests\Thread\ThreadRequest;
 use App\Http\Resources\ThreadResource;
 use App\Models\Channel;
 use App\Models\Guild;
 use App\Models\Thread;
-use App\Rules\UniqueDiscordId;
-use Illuminate\Http\Request;
 
 class ThreadController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(ThreadRequest $request)
     {
-        $fields = $request->validate([
-            'discord_id' => 'string',
-            'guild' => ['uuid', 'exists:App\Models\Guild,external_id',],
-        ]);
-
         $threads = Thread::with(['guild', 'channel']);
-        if (isset($fields['discord_id'])) {
-            $threads->whereDiscordId($fields['discord_id']);
+        if ($request->has('discord_id')) {
+            $threads->whereDiscordId($request->validated('discord_id'));
         }
-        if (isset($fields['guild'])) {
-            $threads->whereGuildId(Guild::whereExternalId($fields['guild'])->first()?->id);
+        if ($request->has('guild')) {
+            $threads->whereGuildId(Guild::whereExternalId($request->validated('guild'))->first()?->id);
         }
         return ThreadResource::collection($threads->get());
     }
@@ -34,20 +29,13 @@ class ThreadController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ThreadCreateRequest $request)
     {
-        $fields = $request->validate([
-            'discord_id' => ['required', new UniqueDiscordId(Thread::query()),],
-            'guild' => ['required', 'uuid', 'exists:App\Models\Guild,external_id'],
-            'channel' => ['required', 'uuid', 'exists:App\Models\Channel,external_id'],
-            'tag' => ['nullable', 'string',],
-        ]);
-
         $thread = new Thread();
-        $thread->discord_id = $fields['discord_id'];
-        $thread->guild()->associate(Guild::whereExternalId($fields['guild'])->first());
-        $thread->channel()->associate(Channel::whereExternalId($fields['channel'])->first());
-        $thread->tag = $fields['tag'] ?? '';
+        $thread->discord_id = $request->validated('discord_id');
+        $thread->guild()->associate(Guild::whereExternalId($request->validated('guild'))->first());
+        $thread->channel()->associate(Channel::whereExternalId($request->validated('channel'))->first());
+        $thread->tag = $request->validated('tag') ?? '';
         $thread->save();
 
         return new ThreadResource($thread->load(['guild', 'channel']));
@@ -64,13 +52,9 @@ class ThreadController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Thread $thread)
+    public function update(ThreadRequest $request, Thread $thread)
     {
-        $fields = $request->validate([
-            'tag' => ['nullable', 'string',],
-        ]);
-
-        $thread->tag = $fields['tag'] ?? '';
+        $thread->tag = $request->validated('tag') ?? '';
         $thread->save();
 
         return new ThreadResource($thread->load(['guild', 'channel']));
