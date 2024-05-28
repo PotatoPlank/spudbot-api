@@ -47,12 +47,12 @@ class GuildController extends Controller
      */
     public function update(GuildRequest $request, Guild $guild)
     {
-        if ($request->has('channel_announce_id')) {
-            $guild->channel_announce_id = $request->validated('channel_announce_id');
-        }
-        if ($request->has('channel_thread_announce_id')) {
-            $guild->channel_thread_announce_id = $request->validated('channel_thread_announce_id');
-        }
+        $validated = $request->except([
+            'id',
+            'discord_id',
+            'external_id',
+        ]);
+        $guild->fill($validated);
         $guild->save();
 
         return new GuildResource($guild);

@@ -57,7 +57,7 @@ class ReminderController extends Controller
      */
     public function show(Reminder $reminder)
     {
-        return $reminder;
+        return new ReminderResource($reminder->load(['guild', 'channel',]));
     }
 
     /**

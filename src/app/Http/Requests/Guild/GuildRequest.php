@@ -25,6 +25,17 @@ class GuildRequest extends FormRequest
             'discord_id' => ['string',],
             'channel_announce_id' => [],
             'channel_thread_announce_id' => [],
+            'channel_public_log_id' => [],
+            'channel_thread_public_log_id' => [],
+            'channel_mod_alert_id' => [],
+            'channel_thread_mod_alert_id' => [],
+            'channel_introduction_id' => [],
+            'channel_thread_introduction_id' => [],
+            'channel_marketplace_id' => [],
+            'channel_thread_marketplace_id' => [],
+            'verified_members_channel_id' => [],
+            'verified_members_role_id' => [],
+            'tenured_member_role_id' => [],
         ];
     }
 }
