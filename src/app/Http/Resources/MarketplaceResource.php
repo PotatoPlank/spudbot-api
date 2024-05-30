@@ -17,6 +17,8 @@ class MarketplaceResource extends JsonResource
         return [
             'external_id' => $this->external_id,
             'last_status' => $this->last_status,
+            'discord_id' => $this->discord_id,
+            'name' => $this->name,
             'tags' => $this->tags,
             'member' => new MemberResource($this->whenLoaded('member')),
             'created_at' => $this->created_at,

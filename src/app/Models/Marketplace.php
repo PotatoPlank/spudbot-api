@@ -14,5 +14,7 @@ class Marketplace extends Model
         'last_status',
         'tags',
         'member',
+        'name',
+        'discord_id',
     ];
 }

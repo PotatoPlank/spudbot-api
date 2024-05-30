@@ -22,6 +22,8 @@ class StoreMarketplaceRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'discord_id' => ['required', 'string'],
+            'name' => ['required', 'string'],
             'member' => ['required', 'uuid', 'exists:App\Models\Member,external_id'],
             'last_status' => ['string', 'required'],
             'tags' => ['string', 'required'],

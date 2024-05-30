@@ -6,15 +6,24 @@ use App\Http\Requests\StoreMarketplaceRequest;
 use App\Http\Requests\UpdateMarketplaceRequest;
 use App\Http\Resources\MarketplaceResource;
 use App\Models\Marketplace;
+use App\Models\Member;
+use Illuminate\Http\Request;
 
 class MarketplaceController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return MarketplaceResource::collection(Marketplace::all());
+        $marketplaces = Marketplace::with(['member',]);
+        if ($request->has('discord_id')) {
+            $marketplaces->whereDiscordId($request->validated('discord_id'));
+        }
+        if ($request->has('member')) {
+            $marketplaces->whereMemberId(Member::whereExternalId($request->validated('member'))->first()?->id);
+        }
+        return MarketplaceResource::collection($marketplaces->get());
     }
 
     /**
@@ -40,8 +49,7 @@ class MarketplaceController extends Controller
      */
     public function update(UpdateMarketplaceRequest $request, Marketplace $marketplace)
     {
-        $marketplace->last_status = $request->validated('last_status') ?? $marketplace->last_status;
-        $marketplace->tags = $request->validated('tags') ?? $marketplace->tags;
+        $marketplace->fill($request->validated());
         $marketplace->save();
 
         return new MarketplaceResource($marketplace->load(['member',]));

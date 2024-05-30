@@ -7,6 +7,7 @@ use App\Http\Controllers\EventAttendanceController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\GuildController;
 use App\Http\Controllers\LeaderboardController;
+use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\ThreadController;
@@ -57,6 +58,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     ]);
     Route::apiResource('threads', ThreadController::class)->parameters([
         'threads' => 'thread:external_id',
+    ]);
+    Route::apiResource('marketplaces', MarketplaceController::class)->parameters([
+        'marketplaces' => 'marketplace:external_id',
     ]);
 
 
