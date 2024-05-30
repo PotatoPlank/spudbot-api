@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\MarketplaceRequest;
 use App\Http\Requests\StoreMarketplaceRequest;
 use App\Http\Requests\UpdateMarketplaceRequest;
 use App\Http\Resources\MarketplaceResource;
 use App\Models\Marketplace;
 use App\Models\Member;
-use Illuminate\Http\Request;
 
 class MarketplaceController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(MarketplaceRequest $request)
     {
         $marketplaces = Marketplace::with(['member',]);
         if ($request->has('discord_id')) {
@@ -31,7 +31,11 @@ class MarketplaceController extends Controller
      */
     public function store(StoreMarketplaceRequest $request)
     {
-        $marketplace = Marketplace::create($request->validated());
+        $marketplace = new Marketplace();
+        $marketplace->fill($request->validated());
+        $marketplace->member()
+            ->associate(Member::whereExternalId($request->validated('member'))->first());
+        $marketplace->save();
 
         return new MarketplaceResource($marketplace->load(['member',]));
     }
