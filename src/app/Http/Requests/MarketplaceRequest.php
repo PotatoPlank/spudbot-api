@@ -26,7 +26,7 @@ class MarketplaceRequest extends FormRequest
             'name' => ['string'],
             'member' => ['uuid', 'exists:App\Models\Member,external_id'],
             'last_status' => ['string',],
-            'tags' => ['string',],
+            'tags' => ['nullable', 'string',],
         ];
     }
 }

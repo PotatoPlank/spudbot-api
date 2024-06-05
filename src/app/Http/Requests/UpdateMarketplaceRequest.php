@@ -24,7 +24,7 @@ class UpdateMarketplaceRequest extends FormRequest
         return [
             'name' => ['string'],
             'last_status' => 'string',
-            'tags' => 'string',
+            'tags' => ['nullable', 'string',],
         ];
     }
 }
