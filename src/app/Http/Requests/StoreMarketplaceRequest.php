@@ -26,7 +26,7 @@ class StoreMarketplaceRequest extends FormRequest
             'name' => ['required', 'string'],
             'member' => ['required', 'uuid', 'exists:App\Models\Member,external_id'],
             'last_status' => ['string', 'required'],
-            'tags' => ['nullable', 'string', 'required'],
+            'tags' => ['nullable', 'string',],
         ];
     }
 }
