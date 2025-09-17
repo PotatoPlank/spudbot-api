@@ -36,6 +36,7 @@ class GuildRequest extends FormRequest
             'verified_members_channel_id' => [],
             'verified_members_role_id' => [],
             'tenured_member_role_id' => [],
+            'member_count_channel_id' => [],
         ];
     }
 }

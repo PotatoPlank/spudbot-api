@@ -30,6 +30,7 @@ class GuildResource extends JsonResource
             'verified_members_channel_id' => $this->verified_members_channel_id,
             'verified_members_role_id' => $this->verified_members_role_id,
             'tenured_member_role_id' => $this->tenured_member_role_id,
+            'member_count_channel_id' => $this->member_count_channel_id,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
